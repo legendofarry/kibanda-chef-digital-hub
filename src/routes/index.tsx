@@ -108,13 +108,16 @@ function Home() {
                   {sparks.map((s) => (
                     <span
                       key={s.id}
-                      style={{ ["--x" as string]: `${s.x}px`, ["--y" as string]: `${s.y}px` }}
+                      style={
+                        {
+                          "--x": `${s.x}px`,
+                          "--y": `${s.y}px`,
+                          animation: "spark 0.8s ease-out forwards",
+                        } as React.CSSProperties
+                      }
                       className="pointer-events-none absolute inset-0 m-auto size-2 rounded-full bg-saffron"
                     />
                   ))}
-                  <style>{`
-                    button > span[style*="--x"] { animation: spark 0.8s ease-out forwards; }
-                  `}</style>
                 </button>
                 <div className="min-h-[3.5rem] flex-1 text-sm">
                   {suggestion ? (

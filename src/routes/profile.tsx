@@ -199,26 +199,21 @@ function Row({
   onClick?: () => void;
   accent?: boolean;
 }) {
+  const navigate = useNavigate();
   const cls = `flex w-full items-center gap-3 rounded-2xl border p-4 text-sm ${
     accent ? "border-ember/30 bg-ember/5 text-ember" : "border-border bg-surface"
   }`;
-  const content = (
-    <>
+  return (
+    <button
+      onClick={() => {
+        if (to) navigate({ to });
+        else onClick?.();
+      }}
+      className={cls}
+    >
       <Icon className={`size-4 ${accent ? "text-ember" : "text-muted-foreground"}`} />
       <span className="flex-1 text-left font-semibold">{label}</span>
       <ChevronRight className="size-4 text-muted-foreground" />
-    </>
-  );
-  if (to) {
-    return (
-      <Link to={to} className={cls}>
-        {content}
-      </Link>
-    );
-  }
-  return (
-    <button onClick={onClick} className={cls}>
-      {content}
     </button>
   );
 }
