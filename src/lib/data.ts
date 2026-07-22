@@ -125,7 +125,7 @@ export const DEFAULT_HOURS: BusinessHours = {
 };
 
 export const CHEF = {
-  name: "Chef Harrison Karimi",
+  name: "John",
   tagline: "Street food, elevated.",
   bio: "Trained across Nairobi's finest kitchens, I bring restaurant technique to the kibanda counter. Every bhajia is hand-cut. Every smokey is fired to order.",
   journey: [

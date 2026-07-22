@@ -83,14 +83,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         name: "description",
         content:
-          "Today's specials, popular items and chef highlights at MUNCH.",
+          "Today's specials, popular items and chef highlights at JFlavors.",
       },
-      { name: "author", content: "MUNCH" },
+      { name: "author", content: "John" },
       { property: "og:title", content: "JFlavors" },
       {
         property: "og:description",
         content:
-          "Today's specials, popular items and chef highlights at MUNCH.",
+          "Today's specials, popular items and chef highlights at JFlavors.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

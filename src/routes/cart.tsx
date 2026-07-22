@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { AppShell } from "@/components/AppShell";
 import { useAppState, actions } from "@/lib/store";
-import { Minus, Plus, Trash2, ArrowRight, ShoppingBag } from "lucide-react";
+import { Minus, Plus, Trash2, ArrowRight, ShoppingBag, PenSquare } from "lucide-react";
 import { toast } from "sonner";
 import {
   AlertDialog,
@@ -18,8 +18,8 @@ import {
 export const Route = createFileRoute("/cart")({
   head: () => ({
     meta: [
-      { title: "Your cart — MUNCH" },
-      { name: "description", content: "Review and adjust your order before checkout." },
+      { title: "Your cart — JFlavors" },
+      { name: "description", content: "Review, customize, and checkout your JFlavors order." },
     ],
   }),
   component: CartPage,
@@ -63,34 +63,62 @@ function CartPage() {
             {lines.map((l) => (
               <li
                 key={l.itemId}
-                className="flex items-center gap-3 rounded-2xl border border-border bg-surface p-3"
+                className="rounded-2xl border border-border bg-surface p-3"
               >
-                <div
-                  className={`grid size-16 shrink-0 place-items-center rounded-xl bg-gradient-to-br text-3xl ${l.item.bg}`}
-                >
-                  {l.item.emoji}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="line-clamp-1 text-sm font-bold">{l.item.name}</p>
-                  <p className="text-xs text-muted-foreground">
-                    KES {l.item.price} × {l.quantity}
-                  </p>
-                  <div className="mt-2 flex items-center gap-2">
-                    <div className="flex items-center gap-1 rounded-full border border-border bg-background p-0.5">
-                      <button
-                        onClick={() => actions.setCartQty(l.itemId, l.quantity - 1)}
-                        className="flex size-7 items-center justify-center rounded-full"
-                      >
-                        <Minus className="size-3" />
-                      </button>
-                      <span className="w-5 text-center text-xs font-bold">{l.quantity}</span>
-                      <button
-                        onClick={() => actions.setCartQty(l.itemId, l.quantity + 1)}
-                        className="flex size-7 items-center justify-center rounded-full"
-                      >
-                        <Plus className="size-3" />
-                      </button>
+                <div className="flex items-center gap-3">
+                  <div
+                    className={`grid size-16 shrink-0 place-items-center rounded-xl bg-gradient-to-br text-3xl ${l.item.bg}`}
+                  >
+                    {l.item.emoji}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="line-clamp-1 text-sm font-bold">{l.item.name}</p>
+                    <p className="text-xs text-muted-foreground">
+                      KES {l.item.price} × {l.quantity}
+                    </p>
+                    <div className="mt-2 flex flex-wrap gap-2 text-[10px]">
+                      <span className="rounded-full bg-background px-2 py-1 text-muted-foreground">
+                        {l.customization?.spiceLevel ?? "medium"}
+                      </span>
+                      {(l.customization?.addOns ?? []).map((addOn) => (
+                        <span key={addOn} className="rounded-full bg-background px-2 py-1 text-muted-foreground">
+                          {addOn}
+                        </span>
+                      ))}
                     </div>
+                    {l.customization?.notes && (
+                      <p className="mt-2 text-[11px] text-muted-foreground">Note: {l.customization.notes}</p>
+                    )}
+                  </div>
+                  <p className="font-heading font-bold text-saffron">KES {l.item.price * l.quantity}</p>
+                </div>
+
+                <div className="mt-3 flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-1 rounded-full border border-border bg-background p-0.5">
+                    <button
+                      onClick={() => actions.setCartQty(l.itemId, l.quantity - 1)}
+                      className="flex size-7 items-center justify-center rounded-full"
+                    >
+                      <Minus className="size-3" />
+                    </button>
+                    <span className="w-5 text-center text-xs font-bold">{l.quantity}</span>
+                    <button
+                      onClick={() => actions.setCartQty(l.itemId, l.quantity + 1)}
+                      className="flex size-7 items-center justify-center rounded-full"
+                    >
+                      <Plus className="size-3" />
+                    </button>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <Link
+                      to="/menu/$id"
+                      params={{ id: l.itemId }}
+                      className="flex items-center gap-1 rounded-full border border-border bg-background px-2.5 py-1.5 text-[11px] font-semibold text-muted-foreground"
+                    >
+                      <PenSquare className="size-3.5" />
+                      Edit
+                    </Link>
                     <button
                       onClick={() => {
                         actions.removeFromCart(l.itemId);
@@ -102,7 +130,6 @@ function CartPage() {
                     </button>
                   </div>
                 </div>
-                <p className="font-heading font-bold text-saffron">KES {l.item.price * l.quantity}</p>
               </li>
             ))}
           </ul>

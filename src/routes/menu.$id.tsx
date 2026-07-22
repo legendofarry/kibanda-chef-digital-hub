@@ -1,19 +1,22 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useMemo, useState } from "react";
 import { AppShell } from "@/components/AppShell";
 import { useAppState, actions } from "@/lib/store";
-import { ArrowLeft, Heart, Minus, Plus, ShoppingBag } from "lucide-react";
+import { ArrowLeft, Heart, Minus, Plus, ShoppingBag, Flame, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/menu/$id")({
   head: ({ params }) => ({
     meta: [
-      { title: `${params.id} — MUNCH` },
-      { name: "description", content: "Order this item from MUNCH." },
+      { title: `${params.id} — JFlavors` },
+      { name: "description", content: "Customize and order this item from JFlavors." },
     ],
   }),
   component: ItemDetail,
 });
+
+const spiceOptions = ["mild", "medium", "hot"] as const;
+const addOnOptions = ["Extra sauce", "Fresh lime", "Extra chili", "Kachumbari"];
 
 function ItemDetail() {
   const { id } = Route.useParams();
@@ -22,6 +25,11 @@ function ItemDetail() {
   const navigate = useNavigate();
   const item = menu.find((m) => m.id === id);
   const [qty, setQty] = useState(1);
+  const [spiceLevel, setSpiceLevel] = useState<(typeof spiceOptions)[number]>("medium");
+  const [addOns, setAddOns] = useState<string[]>(["Fresh lime"]);
+  const [notes, setNotes] = useState("");
+
+  const total = useMemo(() => item ? item.price * qty : 0, [item, qty]);
 
   if (!item) {
     return (
@@ -33,16 +41,27 @@ function ItemDetail() {
 
   const isFav = favorites.includes(item.id);
 
+  function toggleAddOn(option: string) {
+    setAddOns((current) =>
+      current.includes(option) ? current.filter((x) => x !== option) : [...current, option],
+    );
+  }
+
   function add() {
     if (!item) return;
     if (item.soldOut) return;
-    actions.addToCart(item.id, qty);
+    actions.addToCart(item.id, qty, {
+      spiceLevel,
+      addOns,
+      notes: notes.trim() || undefined,
+    });
     toast.success(`${qty}× ${item.name} added to cart`);
+    navigate({ to: "/cart" });
   }
 
   return (
     <AppShell>
-      <div className={`relative aspect-square bg-gradient-to-br ${item.bg}`}>
+      <div className={`relative aspect-[4/4.2] bg-gradient-to-br ${item.bg} px-4 pt-4`}>
         <button
           onClick={() => navigate({ to: "/menu" })}
           className="absolute left-4 top-4 flex size-10 items-center justify-center rounded-full glass"
@@ -58,7 +77,17 @@ function ItemDetail() {
         >
           <Heart className={`size-5 ${isFav ? "fill-ember text-ember" : ""}`} />
         </button>
-        <div className="absolute inset-0 grid place-items-center text-[9rem]">{item.emoji}</div>
+
+        <div className="absolute inset-x-0 top-16 flex items-center justify-center">
+          <div className="rounded-full bg-black/35 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.3em] text-white backdrop-blur-sm">
+            {item.featured ? "Featured plate" : "Chef special"}
+          </div>
+        </div>
+
+        <div className="absolute inset-0 grid place-items-center text-[8.5rem] drop-shadow-[0_16px_44px_rgba(0,0,0,0.45)]">
+          <span className={item.soldOut ? "grayscale" : ""}>{item.emoji}</span>
+        </div>
+
         {item.soldOut && (
           <div className="absolute inset-0 grid place-items-center bg-background/70 backdrop-blur">
             <span className="rounded-full border border-border bg-background px-4 py-2 text-sm font-bold uppercase tracking-widest">
@@ -68,7 +97,7 @@ function ItemDetail() {
         )}
       </div>
 
-      <div className="space-y-6 rounded-t-3xl bg-background p-5 -mt-6 relative z-10">
+      <div className="relative z-10 -mt-6 space-y-5 rounded-[30px] bg-background p-5">
         <div>
           <div className="flex items-start justify-between gap-2">
             <h1 className="font-heading text-2xl font-extrabold text-balance">{item.name}</h1>
@@ -77,6 +106,69 @@ function ItemDetail() {
             </span>
           </div>
           <p className="mt-2 text-sm text-muted-foreground">{item.description}</p>
+        </div>
+
+        <div className="rounded-2xl border border-border bg-surface p-3">
+          <div className="flex items-center justify-between">
+            <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-muted-foreground">Customize</p>
+            <span className="text-xs text-muted-foreground">Make it yours</span>
+          </div>
+
+          <div className="mt-3 space-y-3">
+            <div>
+              <p className="mb-2 text-xs font-semibold text-foreground">Heat level</p>
+              <div className="grid grid-cols-3 gap-2">
+                {spiceOptions.map((level) => (
+                  <button
+                    key={level}
+                    type="button"
+                    onClick={() => setSpiceLevel(level)}
+                    className={`rounded-full border px-3 py-2 text-xs font-bold transition-all ${
+                      spiceLevel === level
+                        ? "border-ember bg-ember/10 text-ember"
+                        : "border-border bg-background text-muted-foreground"
+                    }`}
+                  >
+                    {level}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <p className="mb-2 text-xs font-semibold text-foreground">Add-ons</p>
+              <div className="flex flex-wrap gap-2">
+                {addOnOptions.map((option) => {
+                  const active = addOns.includes(option);
+                  return (
+                    <button
+                      key={option}
+                      type="button"
+                      onClick={() => toggleAddOn(option)}
+                      className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition-all ${
+                        active
+                          ? "border-ember bg-ember/10 text-ember"
+                          : "border-border bg-background text-muted-foreground"
+                      }`}
+                    >
+                      {option}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div>
+              <label className="mb-2 block text-xs font-semibold text-foreground">Order note</label>
+              <textarea
+                rows={2}
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                className="w-full rounded-2xl border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ember"
+                placeholder="Extra sauce, no onions, keep it crisp..."
+              />
+            </div>
+          </div>
         </div>
 
         <div>
@@ -92,6 +184,13 @@ function ItemDetail() {
                 {i}
               </span>
             ))}
+          </div>
+        </div>
+
+        <div className="rounded-2xl bg-surface p-3">
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-muted-foreground">Item total</span>
+            <span className="font-heading font-bold text-saffron">KES {total}</span>
           </div>
         </div>
 
@@ -119,7 +218,7 @@ function ItemDetail() {
             className="flex flex-1 items-center justify-center gap-2 rounded-full sizzle py-3.5 font-heading font-bold text-primary-foreground shadow-glow disabled:opacity-40 disabled:shadow-none"
           >
             <ShoppingBag className="size-4" />
-            {item.soldOut ? "Sold out" : `Add — KES ${item.price * qty}`}
+            {item.soldOut ? "Sold out" : `Add — KES ${total}`}
           </button>
         </div>
       </div>

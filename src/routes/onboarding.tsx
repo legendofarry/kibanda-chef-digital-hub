@@ -16,7 +16,7 @@ export const Route = createFileRoute("/onboarding")({
 const slides = [
   {
     icon: QrCode,
-    title: "Welcome to the kibanda",
+    title: "Welcome to the JFlavors",
     body: "You scanned. You're in. No install, no signup, no friction.",
   },
   {

@@ -17,9 +17,16 @@ export interface User {
   biometricAsked: boolean;
 }
 
+export interface CartCustomization {
+  spiceLevel: "mild" | "medium" | "hot";
+  addOns: string[];
+  notes?: string;
+}
+
 export interface CartItem {
   itemId: string;
   quantity: number;
+  customization?: CartCustomization;
   notes?: string;
 }
 
@@ -263,11 +270,20 @@ export const actions = {
       if (s.user) s.user = { ...s.user, ...patch };
     });
   },
-  addToCart(itemId: string, quantity = 1) {
+  addToCart(itemId: string, quantity = 1, customization?: CartCustomization) {
     update((s) => {
       const existing = s.cart.find((c) => c.itemId === itemId);
-      if (existing) existing.quantity += quantity;
-      else s.cart.push({ itemId, quantity });
+      if (existing) {
+        existing.quantity += quantity;
+        if (customization) existing.customization = customization;
+      } else s.cart.push({ itemId, quantity, customization });
+    });
+  },
+  updateCartItem(itemId: string, patch: Partial<CartItem>) {
+    update((s) => {
+      const item = s.cart.find((x) => x.itemId === itemId);
+      if (!item) return;
+      s.cart = s.cart.map((x) => (x.itemId === itemId ? { ...x, ...patch } : x));
     });
   },
   removeFromCart(itemId: string) {
