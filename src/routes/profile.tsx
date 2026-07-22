@@ -206,7 +206,7 @@ function Row({
   return (
     <button
       onClick={() => {
-        if (to) navigate({ to });
+        if (to) navigate({ to } as any);
         else onClick?.();
       }}
       className={cls}
