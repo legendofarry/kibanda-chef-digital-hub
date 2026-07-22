@@ -79,21 +79,25 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
       { name: "theme-color", content: "#0a0a0a" },
-      { title: "MUNCH — Street food, elevated" },
+      { title: "JFlavors" },
       {
         name: "description",
         content:
-          "MUNCH is Chef Harrison's kibanda: bhajia, smokies, samosas, catering and a private chef service. Order in seconds, tracked live.",
+          "Today's specials, popular items and chef highlights at MUNCH.",
       },
       { name: "author", content: "MUNCH" },
-      { property: "og:title", content: "MUNCH — Street food, elevated" },
+      { property: "og:title", content: "JFlavors" },
       {
         property: "og:description",
         content:
-          "Bhajia, smokies, samosas — plus catering, loyalty and an AI food assistant.",
+          "Today's specials, popular items and chef highlights at MUNCH.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "JFlavors" },
+      { name: "twitter:description", content: "Today's specials, popular items and chef highlights at MUNCH." },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/DEvAILHlqfP945qTr01Wy1aqczr2/social-images/social-1784726860360-1000100048.webp" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/DEvAILHlqfP945qTr01Wy1aqczr2/social-images/social-1784726860360-1000100048.webp" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },

@@ -12,10 +12,10 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "MUNCH — Home" },
+      { title: "JFlavors" },
       { name: "description", content: "Today's specials, popular items and chef highlights at MUNCH." },
-      { property: "og:title", content: "MUNCH — Home" },
-      { property: "og:description", content: "Bhajia, smokies, samosas and more — from Chef Harrison's kibanda." },
+      { property: "og:title", content: "JFlavors" },
+      { property: "og:description", content: "Today's specials, popular items and chef highlights at MUNCH." },
     ],
   }),
   component: Home,
