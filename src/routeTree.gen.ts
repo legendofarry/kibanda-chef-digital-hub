@@ -9,38 +9,366 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ReviewsRouteImport } from './routes/reviews'
+import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as OwnerRouteImport } from './routes/owner'
+import { Route as OrdersRouteImport } from './routes/orders'
+import { Route as OnboardingRouteImport } from './routes/onboarding'
+import { Route as MerchRouteImport } from './routes/merch'
+import { Route as MenuRouteImport } from './routes/menu'
+import { Route as LoyaltyRouteImport } from './routes/loyalty'
+import { Route as DeliveryRouteImport } from './routes/delivery'
+import { Route as ChefRouteImport } from './routes/chef'
+import { Route as CheckoutRouteImport } from './routes/checkout'
+import { Route as CateringRouteImport } from './routes/catering'
+import { Route as CartRouteImport } from './routes/cart'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AiRouteImport } from './routes/ai'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as OrdersIdRouteImport } from './routes/orders.$id'
+import { Route as MenuIdRouteImport } from './routes/menu.$id'
 
+const ReviewsRoute = ReviewsRouteImport.update({
+  id: '/reviews',
+  path: '/reviews',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OwnerRoute = OwnerRouteImport.update({
+  id: '/owner',
+  path: '/owner',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OrdersRoute = OrdersRouteImport.update({
+  id: '/orders',
+  path: '/orders',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OnboardingRoute = OnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MerchRoute = MerchRouteImport.update({
+  id: '/merch',
+  path: '/merch',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MenuRoute = MenuRouteImport.update({
+  id: '/menu',
+  path: '/menu',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoyaltyRoute = LoyaltyRouteImport.update({
+  id: '/loyalty',
+  path: '/loyalty',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DeliveryRoute = DeliveryRouteImport.update({
+  id: '/delivery',
+  path: '/delivery',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ChefRoute = ChefRouteImport.update({
+  id: '/chef',
+  path: '/chef',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CheckoutRoute = CheckoutRouteImport.update({
+  id: '/checkout',
+  path: '/checkout',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CateringRoute = CateringRouteImport.update({
+  id: '/catering',
+  path: '/catering',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CartRoute = CartRouteImport.update({
+  id: '/cart',
+  path: '/cart',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AiRoute = AiRouteImport.update({
+  id: '/ai',
+  path: '/ai',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const OrdersIdRoute = OrdersIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => OrdersRoute,
+} as any)
+const MenuIdRoute = MenuIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => MenuRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/ai': typeof AiRoute
+  '/auth': typeof AuthRoute
+  '/cart': typeof CartRoute
+  '/catering': typeof CateringRoute
+  '/checkout': typeof CheckoutRoute
+  '/chef': typeof ChefRoute
+  '/delivery': typeof DeliveryRoute
+  '/loyalty': typeof LoyaltyRoute
+  '/menu': typeof MenuRouteWithChildren
+  '/merch': typeof MerchRoute
+  '/onboarding': typeof OnboardingRoute
+  '/orders': typeof OrdersRouteWithChildren
+  '/owner': typeof OwnerRoute
+  '/profile': typeof ProfileRoute
+  '/reviews': typeof ReviewsRoute
+  '/menu/$id': typeof MenuIdRoute
+  '/orders/$id': typeof OrdersIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/ai': typeof AiRoute
+  '/auth': typeof AuthRoute
+  '/cart': typeof CartRoute
+  '/catering': typeof CateringRoute
+  '/checkout': typeof CheckoutRoute
+  '/chef': typeof ChefRoute
+  '/delivery': typeof DeliveryRoute
+  '/loyalty': typeof LoyaltyRoute
+  '/menu': typeof MenuRouteWithChildren
+  '/merch': typeof MerchRoute
+  '/onboarding': typeof OnboardingRoute
+  '/orders': typeof OrdersRouteWithChildren
+  '/owner': typeof OwnerRoute
+  '/profile': typeof ProfileRoute
+  '/reviews': typeof ReviewsRoute
+  '/menu/$id': typeof MenuIdRoute
+  '/orders/$id': typeof OrdersIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/ai': typeof AiRoute
+  '/auth': typeof AuthRoute
+  '/cart': typeof CartRoute
+  '/catering': typeof CateringRoute
+  '/checkout': typeof CheckoutRoute
+  '/chef': typeof ChefRoute
+  '/delivery': typeof DeliveryRoute
+  '/loyalty': typeof LoyaltyRoute
+  '/menu': typeof MenuRouteWithChildren
+  '/merch': typeof MerchRoute
+  '/onboarding': typeof OnboardingRoute
+  '/orders': typeof OrdersRouteWithChildren
+  '/owner': typeof OwnerRoute
+  '/profile': typeof ProfileRoute
+  '/reviews': typeof ReviewsRoute
+  '/menu/$id': typeof MenuIdRoute
+  '/orders/$id': typeof OrdersIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/ai'
+    | '/auth'
+    | '/cart'
+    | '/catering'
+    | '/checkout'
+    | '/chef'
+    | '/delivery'
+    | '/loyalty'
+    | '/menu'
+    | '/merch'
+    | '/onboarding'
+    | '/orders'
+    | '/owner'
+    | '/profile'
+    | '/reviews'
+    | '/menu/$id'
+    | '/orders/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/ai'
+    | '/auth'
+    | '/cart'
+    | '/catering'
+    | '/checkout'
+    | '/chef'
+    | '/delivery'
+    | '/loyalty'
+    | '/menu'
+    | '/merch'
+    | '/onboarding'
+    | '/orders'
+    | '/owner'
+    | '/profile'
+    | '/reviews'
+    | '/menu/$id'
+    | '/orders/$id'
+  id:
+    | '__root__'
+    | '/'
+    | '/ai'
+    | '/auth'
+    | '/cart'
+    | '/catering'
+    | '/checkout'
+    | '/chef'
+    | '/delivery'
+    | '/loyalty'
+    | '/menu'
+    | '/merch'
+    | '/onboarding'
+    | '/orders'
+    | '/owner'
+    | '/profile'
+    | '/reviews'
+    | '/menu/$id'
+    | '/orders/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AiRoute: typeof AiRoute
+  AuthRoute: typeof AuthRoute
+  CartRoute: typeof CartRoute
+  CateringRoute: typeof CateringRoute
+  CheckoutRoute: typeof CheckoutRoute
+  ChefRoute: typeof ChefRoute
+  DeliveryRoute: typeof DeliveryRoute
+  LoyaltyRoute: typeof LoyaltyRoute
+  MenuRoute: typeof MenuRouteWithChildren
+  MerchRoute: typeof MerchRoute
+  OnboardingRoute: typeof OnboardingRoute
+  OrdersRoute: typeof OrdersRouteWithChildren
+  OwnerRoute: typeof OwnerRoute
+  ProfileRoute: typeof ProfileRoute
+  ReviewsRoute: typeof ReviewsRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/reviews': {
+      id: '/reviews'
+      path: '/reviews'
+      fullPath: '/reviews'
+      preLoaderRoute: typeof ReviewsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/owner': {
+      id: '/owner'
+      path: '/owner'
+      fullPath: '/owner'
+      preLoaderRoute: typeof OwnerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/orders': {
+      id: '/orders'
+      path: '/orders'
+      fullPath: '/orders'
+      preLoaderRoute: typeof OrdersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onboarding': {
+      id: '/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof OnboardingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/merch': {
+      id: '/merch'
+      path: '/merch'
+      fullPath: '/merch'
+      preLoaderRoute: typeof MerchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/menu': {
+      id: '/menu'
+      path: '/menu'
+      fullPath: '/menu'
+      preLoaderRoute: typeof MenuRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/loyalty': {
+      id: '/loyalty'
+      path: '/loyalty'
+      fullPath: '/loyalty'
+      preLoaderRoute: typeof LoyaltyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/delivery': {
+      id: '/delivery'
+      path: '/delivery'
+      fullPath: '/delivery'
+      preLoaderRoute: typeof DeliveryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/chef': {
+      id: '/chef'
+      path: '/chef'
+      fullPath: '/chef'
+      preLoaderRoute: typeof ChefRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/checkout': {
+      id: '/checkout'
+      path: '/checkout'
+      fullPath: '/checkout'
+      preLoaderRoute: typeof CheckoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/catering': {
+      id: '/catering'
+      path: '/catering'
+      fullPath: '/catering'
+      preLoaderRoute: typeof CateringRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cart': {
+      id: '/cart'
+      path: '/cart'
+      fullPath: '/cart'
+      preLoaderRoute: typeof CartRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ai': {
+      id: '/ai'
+      path: '/ai'
+      fullPath: '/ai'
+      preLoaderRoute: typeof AiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,11 +376,61 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/orders/$id': {
+      id: '/orders/$id'
+      path: '/$id'
+      fullPath: '/orders/$id'
+      preLoaderRoute: typeof OrdersIdRouteImport
+      parentRoute: typeof OrdersRoute
+    }
+    '/menu/$id': {
+      id: '/menu/$id'
+      path: '/$id'
+      fullPath: '/menu/$id'
+      preLoaderRoute: typeof MenuIdRouteImport
+      parentRoute: typeof MenuRoute
+    }
   }
 }
 
+interface MenuRouteChildren {
+  MenuIdRoute: typeof MenuIdRoute
+}
+
+const MenuRouteChildren: MenuRouteChildren = {
+  MenuIdRoute: MenuIdRoute,
+}
+
+const MenuRouteWithChildren = MenuRoute._addFileChildren(MenuRouteChildren)
+
+interface OrdersRouteChildren {
+  OrdersIdRoute: typeof OrdersIdRoute
+}
+
+const OrdersRouteChildren: OrdersRouteChildren = {
+  OrdersIdRoute: OrdersIdRoute,
+}
+
+const OrdersRouteWithChildren =
+  OrdersRoute._addFileChildren(OrdersRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AiRoute: AiRoute,
+  AuthRoute: AuthRoute,
+  CartRoute: CartRoute,
+  CateringRoute: CateringRoute,
+  CheckoutRoute: CheckoutRoute,
+  ChefRoute: ChefRoute,
+  DeliveryRoute: DeliveryRoute,
+  LoyaltyRoute: LoyaltyRoute,
+  MenuRoute: MenuRouteWithChildren,
+  MerchRoute: MerchRoute,
+  OnboardingRoute: OnboardingRoute,
+  OrdersRoute: OrdersRouteWithChildren,
+  OwnerRoute: OwnerRoute,
+  ProfileRoute: ProfileRoute,
+  ReviewsRoute: ReviewsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
