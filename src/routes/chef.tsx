@@ -6,10 +6,10 @@ import { Award, Mail, Phone, Sparkles, Utensils } from "lucide-react";
 export const Route = createFileRoute("/chef")({
   head: () => ({
     meta: [
-      { title: "Chef Harrison — MUNCH" },
+      { title: "Chef John — MUNCH" },
       { name: "description", content: "The chef behind MUNCH: bio, journey, philosophy and services." },
-      { property: "og:title", content: "Chef Harrison — MUNCH" },
-      { property: "og:description", content: "Restaurant-trained street food from Chef Harrison Karimi." },
+      { property: "og:title", content: "Chef John — MUNCH" },
+      { property: "og:description", content: "Restaurant-trained street food from Chef John Karimi." },
     ],
   }),
   component: ChefPage,
@@ -108,7 +108,7 @@ function ChefPage() {
           to="/catering"
           className="block w-full rounded-full sizzle py-4 text-center font-heading font-bold text-primary-foreground shadow-glow"
         >
-          Book Chef Harrison
+          Book Chef John
         </Link>
       </div>
     </AppShell>

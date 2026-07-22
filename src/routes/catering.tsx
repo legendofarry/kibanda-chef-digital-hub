@@ -9,7 +9,7 @@ export const Route = createFileRoute("/catering")({
   head: () => ({
     meta: [
       { title: "Catering & private chef — MUNCH" },
-      { name: "description", content: "Book Chef Harrison for events, weddings, corporate lunches and private dinners." },
+      { name: "description", content: "Book Chef John for events, weddings, corporate lunches and private dinners." },
       { property: "og:title", content: "Catering — MUNCH" },
       { property: "og:description", content: "Bring the kibanda to your next event." },
     ],
@@ -61,7 +61,7 @@ function Catering() {
           </div>
           <h1 className="mt-6 font-heading text-3xl font-extrabold">Request sent</h1>
           <p className="mt-2 max-w-xs text-sm text-muted-foreground">
-            Chef Harrison usually responds within a few hours. We'll call the number you gave.
+            Chef John usually responds within a few hours. We'll call the number you gave.
           </p>
           <button
             onClick={() => {

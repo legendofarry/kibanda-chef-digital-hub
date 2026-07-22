@@ -7,7 +7,7 @@ export const Route = createFileRoute("/onboarding")({
   head: () => ({
     meta: [
       { title: "Welcome to MUNCH" },
-      { name: "description", content: "Scan, order, and enjoy Chef Harrison's kibanda." },
+      { name: "description", content: "Scan, order, and enjoy Chef John's kibanda." },
     ],
   }),
   component: Onboarding,
@@ -26,7 +26,7 @@ const slides = [
   },
   {
     icon: ChefHat,
-    title: "Meet Chef Harrison",
+    title: "Meet Chef John",
     body: "Restaurant-trained. Kibanda-priced. Every bhajia hand-cut.",
   },
   {

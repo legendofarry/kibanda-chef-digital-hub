@@ -145,7 +145,7 @@ const initialState: AppState = {
       rating: 5,
       foodRating: 5,
       serviceRating: 4,
-      text: "Chef Harrison actually knows his craft. This isn't a normal kibanda.",
+      text: "Chef John actually knows his craft. This isn't a normal kibanda.",
       photos: [],
       createdAt: Date.now() - 86400000 * 8,
     },
