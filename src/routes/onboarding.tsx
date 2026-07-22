@@ -17,7 +17,7 @@ const slides = [
   {
     icon: QrCode,
     title: "Welcome to the JFlavors",
-    body: "You scanned. You're in. No install, no signup, no friction.",
+    body: "Your dining experience starts here",
   },
   {
     icon: Sparkles,
