@@ -197,7 +197,7 @@ function Home() {
                 to="/menu/$id"
                 params={{ id: item.id }}
                 key={item.id}
-                className={`group relative w-64 shrink-0 overflow-hidden rounded-3xl border border-border`}
+                className={`group relative w-64 shrink-0 overflow-hidden rounded-2xl border border-border`}
               >
                 <div className={`aspect-[4/3] bg-gradient-to-br ${item.bg} relative`}>
                   <div className="absolute inset-0 grid place-items-center text-7xl">
