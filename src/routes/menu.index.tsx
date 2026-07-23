@@ -5,7 +5,7 @@ import { ItemTile } from "@/components/ItemTile";
 import { useAppState } from "@/lib/store";
 import type { MenuCategory } from "@/lib/data";
 
-export const Route = createFileRoute("/menu")({
+export const Route = createFileRoute("/menu/")({
   head: () => ({
     meta: [
       { title: "Menu — JFlavors" },
