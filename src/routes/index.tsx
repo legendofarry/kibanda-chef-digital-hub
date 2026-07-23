@@ -42,23 +42,25 @@ function Home() {
   async function tossPan() {
     if (shaking) return;
     setShaking(true);
-    const next = Array.from({ length: 8 }, (_, i) => ({
+    setSuggestion(null);
+    const next = Array.from({ length: 14 }, (_, i) => ({
       id: Date.now() + i,
-      x: (Math.random() - 0.5) * 120,
-      y: -Math.random() * 100 - 20,
+      x: (Math.random() - 0.5) * 260,
+      y: (Math.random() - 0.5) * 180,
     }));
     setSparks(next);
-    setTimeout(() => setSparks([]), 800);
+    setTimeout(() => setSparks([]), 1400);
     try {
       const res = await suggest({ data: { mood: undefined } });
       const item = menu.find((m) => m.id === res.itemId);
-      if (item) {
-        setSuggestion({ id: item.id, name: item.name, reason: res.reason });
-      }
+      // Let the animation breathe before revealing the pick
+      setTimeout(() => {
+        if (item) setSuggestion({ id: item.id, name: item.name, reason: res.reason });
+        setShaking(false);
+      }, 1400);
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Couldn't fetch a suggestion.");
-    } finally {
-      setTimeout(() => setShaking(false), 800);
+      setShaking(false);
     }
   }
 
