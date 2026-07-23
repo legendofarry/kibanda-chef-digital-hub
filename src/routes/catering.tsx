@@ -8,9 +8,9 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/catering")({
   head: () => ({
     meta: [
-      { title: "Catering & private chef — MUNCH" },
+      { title: "Catering & private chef — JFlavors" },
       { name: "description", content: "Book Chef John for events, weddings, corporate lunches and private dinners." },
-      { property: "og:title", content: "Catering — MUNCH" },
+      { property: "og:title", content: "Catering — JFlavors" },
       { property: "og:description", content: "Bring the kibanda to your next event." },
     ],
   }),

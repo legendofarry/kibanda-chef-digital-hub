@@ -31,8 +31,8 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/profile")({
   head: () => ({
     meta: [
-      { title: "Profile — MUNCH" },
-      { name: "description", content: "Your MUNCH profile, favorites and settings." },
+      { title: "Profile — JFlavors" },
+      { name: "description", content: "Your JFlavors profile, favorites and settings." },
     ],
   }),
   component: Profile,

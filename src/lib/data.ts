@@ -132,13 +132,13 @@ export const CHEF = {
     { year: "2015", event: "Apprenticeship at Tamarind Nairobi" },
     { year: "2018", event: "Sous chef, Hemingways Nairobi" },
     { year: "2021", event: "Head chef, private events, Karen" },
-    { year: "2024", event: "Opened Kibanda MUNCH" },
+    { year: "2024", event: "Opened Kibanda JFlavors" },
   ],
   certifications: ["City & Guilds Culinary Arts", "HACCP Food Safety Level 3"],
   philosophy:
     "Great food doesn't need a linen tablecloth. It needs heat, honesty, and hands that care.",
   services: ["Private chef", "Corporate lunches", "Weddings", "Cocktail catering"],
-  contact: { phone: "+254 712 345 678", email: "chef@munch.co.ke" },
+  contact: { phone: "+254 712 345 678", email: "chef@jflavors.co.ke" },
 };
 
 export const PROMOS = [
@@ -157,7 +157,7 @@ export const PROMOS = [
 ];
 
 export const MERCH_TEASERS = [
-  { id: "m1", name: "MUNCH House Sauce", price: 350, emoji: "🍾" },
+  { id: "m1", name: "JFlavors House Sauce", price: 350, emoji: "🍾" },
   { id: "m2", name: "Kibanda Apron", price: 1200, emoji: "🧑‍🍳" },
   { id: "m3", name: "Signature Tee", price: 1500, emoji: "👕" },
 ];

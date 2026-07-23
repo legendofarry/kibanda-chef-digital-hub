@@ -6,9 +6,9 @@ import { Award, Mail, Phone, Sparkles, Utensils } from "lucide-react";
 export const Route = createFileRoute("/chef")({
   head: () => ({
     meta: [
-      { title: "Chef John — MUNCH" },
-      { name: "description", content: "The chef behind MUNCH: bio, journey, philosophy and services." },
-      { property: "og:title", content: "Chef John — MUNCH" },
+      { title: "Chef John — JFlavors" },
+      { name: "description", content: "The chef behind JFlavors: bio, journey, philosophy and services." },
+      { property: "og:title", content: "Chef John — JFlavors" },
       { property: "og:description", content: "Restaurant-trained street food from Chef John Karimi." },
     ],
   }),

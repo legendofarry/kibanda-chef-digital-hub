@@ -13,9 +13,9 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "JFlavors" },
-      { name: "description", content: "Today's specials, popular items and chef highlights at MUNCH." },
+      { name: "description", content: "Today's specials, popular items and chef highlights at JFlavors." },
       { property: "og:title", content: "JFlavors" },
-      { property: "og:description", content: "Today's specials, popular items and chef highlights at MUNCH." },
+      { property: "og:description", content: "Today's specials, popular items and chef highlights at JFlavors." },
     ],
   }),
   component: Home,
@@ -74,7 +74,7 @@ function Home() {
             </div>
           </div>
           <div>
-            <h1 className="font-heading text-xl font-extrabold leading-none">MUNCH</h1>
+            <h1 className="font-heading text-xl font-extrabold leading-none">JFlavors</h1>
             <p className="mt-1 text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
               {user ? `Hey, ${user.username}` : "Hello, guest"}
             </p>

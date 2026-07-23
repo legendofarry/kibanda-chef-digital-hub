@@ -8,9 +8,9 @@ import type { MenuCategory } from "@/lib/data";
 export const Route = createFileRoute("/menu")({
   head: () => ({
     meta: [
-      { title: "Menu — MUNCH" },
+      { title: "Menu — JFlavors" },
       { name: "description", content: "Browse bhajia, smokies, samosas, sides and drinks." },
-      { property: "og:title", content: "Menu — MUNCH" },
+      { property: "og:title", content: "Menu — JFlavors" },
       { property: "og:description", content: "The full kibanda menu, live availability, real prices." },
     ],
   }),

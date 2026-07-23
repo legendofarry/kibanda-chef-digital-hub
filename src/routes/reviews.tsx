@@ -19,8 +19,8 @@ import {
 export const Route = createFileRoute("/reviews")({
   head: () => ({
     meta: [
-      { title: "Reviews — MUNCH" },
-      { name: "description", content: "What the neighbourhood is saying about MUNCH." },
+      { title: "Reviews — JFlavors" },
+      { name: "description", content: "What the neighbourhood is saying about JFlavors." },
     ],
   }),
   component: Reviews,

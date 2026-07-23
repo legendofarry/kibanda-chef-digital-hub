@@ -6,7 +6,7 @@ import { Flame, QrCode, Sparkles, ChefHat, Trophy } from "lucide-react";
 export const Route = createFileRoute("/onboarding")({
   head: () => ({
     meta: [
-      { title: "Welcome to MUNCH" },
+      { title: "Welcome to JFlavors" },
       { name: "description", content: "Scan, order, and enjoy Chef John's kibanda." },
     ],
   }),
@@ -57,7 +57,7 @@ function Onboarding() {
         <div className="flex size-9 items-center justify-center rounded-xl sizzle">
           <Flame className="size-4 text-primary-foreground" strokeWidth={2.5} />
         </div>
-        <span className="font-heading text-lg font-extrabold">MUNCH</span>
+        <span className="font-heading text-lg font-extrabold">JFlavors</span>
       </div>
 
       <div className="flex flex-1 flex-col items-center justify-center text-center">
