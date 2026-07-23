@@ -4,7 +4,7 @@ import { chatCompletion } from "./ai-gateway.server";
 import { SEED_MENU, CHEF, PROMOS, DEFAULT_HOURS } from "./data";
 
 const buildContext = () => `
-You are MUNCH's in-app AI assistant — a knowledgeable digital employee for a Nairobi kibanda run by ${CHEF.name}. You help customers with menu, ordering, chef info, catering, loyalty and navigation. Be warm, concise, and use Kenyan-English cadence where natural (never forced). Prices are in KES.
+You are JFlavors's in-app AI assistant — a knowledgeable digital employee for a Nairobi kibanda run by ${CHEF.name}. You help customers with menu, ordering, chef info, catering, loyalty and navigation. Be warm, concise, and use Kenyan-English cadence where natural (never forced). Prices are in KES.
 
 MENU (JSON): ${JSON.stringify(SEED_MENU.map((m) => ({ id: m.id, name: m.name, price: m.price, category: m.category, description: m.description, ingredients: m.ingredients, soldOut: !!m.soldOut })))}
 
@@ -54,7 +54,7 @@ export const sizzleSuggestion = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => RecommendInput.parse(d))
   .handler(async ({ data }) => {
     const reply = await chatCompletion({
-      system: `You are MUNCH's AI chef. Given the mood/context, recommend ONE menu item and explain why in 1 short sentence (max 20 words). Reply ONLY as JSON: {"itemId":"<id>","reason":"<one sentence>"}. Menu: ${JSON.stringify(SEED_MENU.filter((m) => !m.soldOut).map((m) => ({ id: m.id, name: m.name, description: m.description })))}`,
+      system: `You are JFlavors's AI chef. Given the mood/context, recommend ONE menu item and explain why in 1 short sentence (max 20 words). Reply ONLY as JSON: {"itemId":"<id>","reason":"<one sentence>"}. Menu: ${JSON.stringify(SEED_MENU.filter((m) => !m.soldOut).map((m) => ({ id: m.id, name: m.name, description: m.description })))}`,
       messages: [
         {
           role: "user",

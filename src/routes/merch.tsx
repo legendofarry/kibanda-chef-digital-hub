@@ -7,8 +7,8 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/merch")({
   head: () => ({
     meta: [
-      { title: "Merch — MUNCH" },
-      { name: "description", content: "Sauces, aprons, tees and more — coming soon from MUNCH." },
+      { title: "Merch — JFlavors" },
+      { name: "description", content: "Sauces, aprons, tees and more — coming soon from JFlavors." },
     ],
   }),
   component: Merch,

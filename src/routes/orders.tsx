@@ -6,7 +6,7 @@ import { Receipt, ArrowRight } from "lucide-react";
 export const Route = createFileRoute("/orders")({
   head: () => ({
     meta: [
-      { title: "Your orders — MUNCH" },
+      { title: "Your orders — JFlavors" },
       { name: "description", content: "Track your active and past orders in real time." },
     ],
   }),

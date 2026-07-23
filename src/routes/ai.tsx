@@ -9,8 +9,8 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/ai")({
   head: () => ({
     meta: [
-      { title: "MUNCH AI Assistant" },
-      { name: "description", content: "Ask MUNCH's AI about the menu, prices, catering and more." },
+      { title: "JFlavors AI Assistant" },
+      { name: "description", content: "Ask JFlavors's AI about the menu, prices, catering and more." },
     ],
   }),
   component: AiChat,
@@ -33,7 +33,7 @@ function AiChat() {
     {
       role: "assistant",
       content:
-        "Hey 👋 I'm MUNCH — your AI food buddy. Ask about the menu, prices, chef, catering, loyalty or how to order. I've got you.",
+        "Hey 👋 I'm JFlavors — your AI food buddy. Ask about the menu, prices, chef, catering, loyalty or how to order. I've got you.",
     },
   ]);
   const [input, setInput] = useState("");
@@ -77,7 +77,7 @@ function AiChat() {
             <Sparkles className="size-4 text-primary-foreground" />
           </div>
           <div>
-            <p className="font-heading text-lg font-extrabold leading-none">MUNCH AI</p>
+            <p className="font-heading text-lg font-extrabold leading-none">JFlavors AI</p>
             <p className="text-[10px] text-muted-foreground">Your kibanda concierge</p>
           </div>
         </div>
@@ -142,7 +142,7 @@ function AiChat() {
           <input
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Ask MUNCH..."
+            placeholder="Ask JFlavors..."
             className="flex-1 bg-transparent px-3 text-sm placeholder:text-muted-foreground focus:outline-none"
           />
           <button

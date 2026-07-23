@@ -9,7 +9,7 @@ import type { MenuItem } from "@/lib/data";
 export const Route = createFileRoute("/owner")({
   head: () => ({
     meta: [
-      { title: "Owner dashboard — MUNCH" },
+      { title: "Owner dashboard — JFlavors" },
       { name: "description", content: "Manage menu, orders, catering and analytics." },
     ],
   }),

@@ -19,8 +19,8 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/orders/$id")({
   head: () => ({
     meta: [
-      { title: "Order tracking — MUNCH" },
-      { name: "description", content: "Live status of your MUNCH order." },
+      { title: "Order tracking — JFlavors" },
+      { name: "description", content: "Live status of your JFlavors order." },
     ],
   }),
   component: OrderDetail,

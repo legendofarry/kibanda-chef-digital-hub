@@ -13,9 +13,9 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "JFlavors" },
-      { name: "description", content: "Today's specials, popular items and chef highlights at MUNCH." },
+      { name: "description", content: "Today's specials, popular items and chef highlights at JFlavors." },
       { property: "og:title", content: "JFlavors" },
-      { property: "og:description", content: "Today's specials, popular items and chef highlights at MUNCH." },
+      { property: "og:description", content: "Today's specials, popular items and chef highlights at JFlavors." },
     ],
   }),
   component: Home,
@@ -42,23 +42,25 @@ function Home() {
   async function tossPan() {
     if (shaking) return;
     setShaking(true);
-    const next = Array.from({ length: 8 }, (_, i) => ({
+    setSuggestion(null);
+    const next = Array.from({ length: 14 }, (_, i) => ({
       id: Date.now() + i,
-      x: (Math.random() - 0.5) * 120,
-      y: -Math.random() * 100 - 20,
+      x: (Math.random() - 0.5) * 260,
+      y: (Math.random() - 0.5) * 180,
     }));
     setSparks(next);
-    setTimeout(() => setSparks([]), 800);
+    setTimeout(() => setSparks([]), 1400);
     try {
       const res = await suggest({ data: { mood: undefined } });
       const item = menu.find((m) => m.id === res.itemId);
-      if (item) {
-        setSuggestion({ id: item.id, name: item.name, reason: res.reason });
-      }
+      // Let the animation breathe before revealing the pick
+      setTimeout(() => {
+        if (item) setSuggestion({ id: item.id, name: item.name, reason: res.reason });
+        setShaking(false);
+      }, 1400);
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Couldn't fetch a suggestion.");
-    } finally {
-      setTimeout(() => setShaking(false), 800);
+      setShaking(false);
     }
   }
 
@@ -74,7 +76,7 @@ function Home() {
             </div>
           </div>
           <div>
-            <h1 className="font-heading text-xl font-extrabold leading-none">MUNCH</h1>
+            <h1 className="font-heading text-xl font-extrabold leading-none">JFlavors</h1>
             <p className="mt-1 text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
               {user ? `Hey, ${user.username}` : "Hello, guest"}
             </p>
@@ -85,63 +87,78 @@ function Home() {
       <div className="mt-6 space-y-8 pb-6">
         {/* Signature AI: Toss the Pan */}
         <section className="px-5 animate-rise">
-          <div className="relative overflow-hidden rounded-3xl sizzle p-6 text-primary-foreground shadow-glow">
+          <button
+            type="button"
+            onClick={tossPan}
+            aria-label="Toss the pan for an AI pick"
+            className="relative block w-full overflow-hidden rounded-2xl sizzle p-6 text-left text-primary-foreground shadow-glow transition-transform active:scale-[0.99]"
+          >
             <div className="relative z-10">
-              <div className="inline-flex items-center gap-1.5 rounded-full bg-black/20 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest">
+              <div className="inline-flex items-center gap-1.5 rounded-full bg-black/25 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest">
                 <Sparkles className="size-3" /> AI Chef
               </div>
               <h2 className="mt-3 font-heading text-3xl font-extrabold leading-tight text-balance">
                 Can't decide?<br />Toss the pan.
               </h2>
-              <p className="mt-2 max-w-[26ch] text-sm opacity-90">
-                Tap and hold — the AI shakes the pan and picks something crackling for you.
+              <p className="mt-2 max-w-[28ch] text-sm opacity-90">
+                Tap the card — the pan tosses, the egg flips, the chef picks.
               </p>
-              <div className="mt-5 flex items-center gap-3">
-                <button
-                  onClick={tossPan}
-                  aria-label="Toss the pan"
-                  className={`relative flex size-16 items-center justify-center rounded-full bg-black text-white shadow-xl transition-transform active:scale-90 ${
-                    shaking ? "animate-shake" : ""
-                  }`}
-                >
-                  <span className="text-2xl">🍳</span>
-                  {sparks.map((s) => (
-                    <span
-                      key={s.id}
-                      style={
-                        {
-                          "--x": `${s.x}px`,
-                          "--y": `${s.y}px`,
-                          animation: "spark 0.8s ease-out forwards",
-                        } as React.CSSProperties
-                      }
-                      className="pointer-events-none absolute inset-0 m-auto size-2 rounded-full bg-saffron"
-                    />
-                  ))}
-                </button>
-                <div className="min-h-[3.5rem] flex-1 text-sm">
-                  {suggestion ? (
-                    <div className="animate-rise">
-                      <p className="font-bold">{suggestion.name}</p>
-                      <p className="text-xs opacity-90 line-clamp-2">{suggestion.reason}</p>
-                      <Link
-                        to="/menu/$id"
-                        params={{ id: suggestion.id }}
-                        className="mt-1 inline-flex items-center gap-1 text-xs font-bold underline"
-                      >
-                        Try it <ArrowRight className="size-3" />
-                      </Link>
-                    </div>
-                  ) : (
-                    <p className="text-xs opacity-70">
-                      {shaking ? "Shaking the pan..." : "Ready when you are."}
-                    </p>
-                  )}
-                </div>
+
+              <div className="mt-5 min-h-[3.5rem] text-sm">
+                {suggestion && !shaking ? (
+                  <div className="animate-rise rounded-xl bg-black/25 p-3 backdrop-blur-sm">
+                    <p className="font-heading text-lg font-extrabold">{suggestion.name}</p>
+                    <p className="text-xs opacity-90 line-clamp-2">{suggestion.reason}</p>
+                    <Link
+                      to="/menu/$id"
+                      params={{ id: suggestion.id }}
+                      onClick={(e) => e.stopPropagation()}
+                      className="mt-2 inline-flex items-center gap-1 rounded-full bg-black/40 px-3 py-1 text-xs font-bold"
+                    >
+                      Open details <ArrowRight className="size-3" />
+                    </Link>
+                  </div>
+                ) : (
+                  <p className="text-xs opacity-80">
+                    {shaking ? "Tossing…" : "Tap anywhere on the card."}
+                  </p>
+                )}
               </div>
             </div>
+
+            {/* Fullcard flip animation overlay */}
+            {shaking && (
+              <div className="pointer-events-none absolute inset-0 z-20 overflow-hidden rounded-2xl">
+                <div className="absolute inset-0 bg-black/50 backdrop-blur-[2px]" />
+                <div className="absolute inset-0 bg-gradient-to-t from-ember/50 via-transparent to-transparent animate-flash" />
+                <div className="absolute inset-0 grid place-items-center">
+                  <div className="relative">
+                    <span className="absolute inset-0 grid place-items-center text-[9rem] leading-none animate-pan-swing drop-shadow-[0_10px_30px_rgba(0,0,0,0.5)]">
+                      🍳
+                    </span>
+                    <span className="relative block text-[6rem] leading-none animate-egg-toss drop-shadow-[0_10px_24px_rgba(255,180,60,0.6)]">
+                      🥚
+                    </span>
+                  </div>
+                </div>
+                {sparks.map((s) => (
+                  <span
+                    key={s.id}
+                    style={
+                      {
+                        "--x": `${s.x}px`,
+                        "--y": `${s.y}px`,
+                        animation: "spark 1s ease-out forwards",
+                      } as React.CSSProperties
+                    }
+                    className="pointer-events-none absolute left-1/2 top-1/2 size-2.5 rounded-full bg-saffron shadow-[0_0_16px_var(--saffron)]"
+                  />
+                ))}
+              </div>
+            )}
+
             <div className="absolute -right-8 -top-8 size-40 rounded-full bg-black/20 blur-3xl" />
-          </div>
+          </button>
         </section>
 
         {/* Loyalty snapshot */}
@@ -180,7 +197,7 @@ function Home() {
                 to="/menu/$id"
                 params={{ id: item.id }}
                 key={item.id}
-                className={`group relative w-64 shrink-0 overflow-hidden rounded-3xl border border-border`}
+                className={`group relative w-64 shrink-0 overflow-hidden rounded-2xl border border-border`}
               >
                 <div className={`aspect-[4/3] bg-gradient-to-br ${item.bg} relative`}>
                   <div className="absolute inset-0 grid place-items-center text-7xl">

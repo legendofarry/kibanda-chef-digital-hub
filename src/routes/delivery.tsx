@@ -8,8 +8,8 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/delivery")({
   head: () => ({
     meta: [
-      { title: "Become a rider — MUNCH" },
-      { name: "description", content: "Join the MUNCH delivery team. Coming soon." },
+      { title: "Become a rider — JFlavors" },
+      { name: "description", content: "Join the JFlavors delivery team. Coming soon." },
     ],
   }),
   component: Delivery,
@@ -42,7 +42,7 @@ function Delivery() {
         </button>
         <div>
           <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-ember">Delivery</p>
-          <h1 className="font-heading text-2xl font-extrabold">Ride with MUNCH</h1>
+          <h1 className="font-heading text-2xl font-extrabold">Ride with JFlavors</h1>
         </div>
       </header>
 
@@ -55,7 +55,7 @@ function Delivery() {
             Deliver hot food. Set your own hours.
           </h2>
           <p className="mt-2 text-sm opacity-90">
-            We're building a delivery program for MUNCH riders. Sign up to get early access.
+            We're building a delivery program for JFlavors riders. Sign up to get early access.
           </p>
         </div>
       </section>

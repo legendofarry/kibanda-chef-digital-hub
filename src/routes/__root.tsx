@@ -95,7 +95,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "JFlavors" },
-      { name: "twitter:description", content: "Today's specials, popular items and chef highlights at MUNCH." },
+      { name: "twitter:description", content: "Today's specials, popular items and chef highlights at JFlavors." },
       { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/DEvAILHlqfP945qTr01Wy1aqczr2/social-images/social-1784726860360-1000100048.webp" },
       { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/DEvAILHlqfP945qTr01Wy1aqczr2/social-images/social-1784726860360-1000100048.webp" },
     ],

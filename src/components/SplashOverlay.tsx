@@ -25,7 +25,7 @@ export function SplashOverlay() {
             </div>
           </div>
           <div className="text-center">
-            <h1 className="font-heading text-4xl font-extrabold tracking-tight">MUNCH</h1>
+            <h1 className="font-heading text-4xl font-extrabold tracking-tight">JFlavors</h1>
             <p className="mt-2 text-xs uppercase tracking-[0.3em] text-muted-foreground">
               Street food, elevated
             </p>

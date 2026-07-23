@@ -9,7 +9,7 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "Sign in — MUNCH" },
+      { title: "Sign in — JFlavors" },
       { name: "description", content: "Sign in to review, save favorites and earn loyalty points." },
     ],
   }),
@@ -66,7 +66,7 @@ function Auth() {
       // We don't persist a credential in this prototype; we just confirm the prompt worked.
       const publicKey: PublicKeyCredentialCreationOptions = {
         challenge: crypto.getRandomValues(new Uint8Array(32)),
-        rp: { name: "MUNCH" },
+        rp: { name: "JFlavors" },
         user: {
           id: crypto.getRandomValues(new Uint8Array(16)),
           name: form.username,

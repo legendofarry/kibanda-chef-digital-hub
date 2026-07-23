@@ -6,8 +6,8 @@ import { Award, Flame, Trophy } from "lucide-react";
 export const Route = createFileRoute("/loyalty")({
   head: () => ({
     meta: [
-      { title: "Loyalty — MUNCH" },
-      { name: "description", content: "Your MUNCH loyalty card, points and badges." },
+      { title: "Loyalty — JFlavors" },
+      { name: "description", content: "Your JFlavors loyalty card, points and badges." },
     ],
   }),
   component: Loyalty,
@@ -40,7 +40,7 @@ function Loyalty() {
         <div className="relative overflow-hidden rounded-3xl sizzle p-6 text-primary-foreground shadow-glow">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-widest opacity-80">MUNCH · Loyalty</p>
+              <p className="text-[10px] font-bold uppercase tracking-widest opacity-80">JFlavors · Loyalty</p>
               <p className="mt-1 font-heading text-4xl font-extrabold">{points}</p>
               <p className="text-xs opacity-80">points</p>
             </div>

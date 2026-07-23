@@ -63,8 +63,11 @@ function ItemDetail() {
     <AppShell>
       <div className={`relative aspect-[4/4.2] bg-gradient-to-br ${item.bg} px-4 pt-4`}>
         <button
-          onClick={() => navigate({ to: "/menu" })}
-          className="absolute left-4 top-4 flex size-10 items-center justify-center rounded-full glass"
+          onClick={() => {
+            if (window.history.length > 1) window.history.back();
+            else navigate({ to: "/menu" });
+          }}
+          className="absolute left-4 top-4 z-10 flex size-10 items-center justify-center rounded-full glass"
         >
           <ArrowLeft className="size-5" />
         </button>

@@ -20,7 +20,7 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/checkout")({
   head: () => ({
     meta: [
-      { title: "Checkout — MUNCH" },
+      { title: "Checkout — JFlavors" },
       { name: "description", content: "Pin your location, choose how you'll pay, and place your order." },
     ],
   }),

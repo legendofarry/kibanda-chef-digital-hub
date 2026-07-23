@@ -4,7 +4,7 @@ import { useSyncExternalStore } from "react";
 import type { MenuItem, BusinessHours } from "./data";
 import { SEED_MENU, DEFAULT_HOURS, OWNER_EMAIL } from "./data";
 
-const KEY = "munch.state.v1";
+const KEY = "jflavors.state.v1";
 
 export interface User {
   id: string;
