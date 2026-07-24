@@ -1,7 +1,8 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, useRouter } from "@tanstack/react-router";
 import { useMemo, useRef, useState } from "react";
 import { AppShell } from "@/components/AppShell";
 import { useAppState, actions } from "@/lib/store";
+import type { OrderType } from "@/lib/store";
 import { PinMap, type PinCoords } from "@/components/PinMap";
 import { BUSINESS_PAYMENT_NUMBER } from "@/lib/data";
 import {
@@ -14,14 +15,22 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Camera, Check, Copy, Wallet } from "lucide-react";
+import {
+  ArrowLeft,
+  Bike,
+  Camera,
+  Check,
+  Copy,
+  Store,
+  Wallet,
+} from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/checkout")({
   head: () => ({
     meta: [
       { title: "Checkout — JFlavors" },
-      { name: "description", content: "Pin your location, choose how you'll pay, and place your order." },
+      { name: "description", content: "Pickup or delivery, choose how you'll pay, and place your order." },
     ],
   }),
   component: Checkout,
@@ -34,6 +43,7 @@ function Checkout() {
   const menu = useAppState((s) => s.menu);
   const user = useAppState((s) => s.user);
   const navigate = useNavigate();
+  const router = useRouter();
 
   const lines = useMemo(
     () => cart.map((c) => ({ ...c, item: menu.find((m) => m.id === c.itemId)! })),
@@ -41,12 +51,14 @@ function Checkout() {
   );
   const total = lines.reduce((a, l) => a + l.item.price * l.quantity, 0);
 
+  const [orderType, setOrderType] = useState<OrderType>("delivery");
   const [method, setMethod] = useState<Method>("mpesa");
   const [pin, setPin] = useState<PinCoords | null>(null);
   const [building, setBuilding] = useState("");
   const [house, setHouse] = useState("");
   const [notes, setNotes] = useState("");
   const [guestName, setGuestName] = useState("");
+  const [guestPhone, setGuestPhone] = useState("");
   const [screenshot, setScreenshot] = useState<string | null>(null);
   const [showConfirm, setShowConfirm] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -67,11 +79,19 @@ function Checkout() {
     toast.success("Payment number copied");
   }
 
+  function goBack() {
+    if (window.history.length > 1) router.history.back();
+    else navigate({ to: "/cart" });
+  }
+
   function ready() {
-    if (!pin) return "Pin your location first";
-    if (!building.trim()) return "Enter the building or landmark";
-    if (!house.trim()) return "Enter your house/apt number";
     if (!user && !guestName.trim()) return "Add a name so the chef knows who to call";
+    if (!user && !guestPhone.trim()) return "Add a phone number";
+    if (orderType === "delivery") {
+      if (!pin) return "Pin your location first";
+      if (!building.trim()) return "Enter the building or landmark";
+      if (!house.trim()) return "Enter your house/apt number";
+    }
     if (method !== "cash" && !screenshot) return "Attach the payment screenshot";
     return null;
   }
@@ -85,6 +105,8 @@ function Checkout() {
     const order = actions.placeOrder({
       userId: user?.id ?? null,
       guestName: user ? undefined : guestName.trim(),
+      guestPhone: user ? undefined : guestPhone.trim(),
+      orderType,
       items: lines.map((l) => ({
         itemId: l.itemId,
         name: l.item.name,
@@ -94,13 +116,16 @@ function Checkout() {
       total,
       paymentMethod: method,
       paymentScreenshot: screenshot ?? undefined,
-      location: {
-        lat: pin!.lat,
-        lng: pin!.lng,
-        building: building.trim(),
-        houseNumber: house.trim(),
-        notes: notes.trim(),
-      },
+      location:
+        orderType === "delivery" && pin
+          ? {
+              lat: pin.lat,
+              lng: pin.lng,
+              building: building.trim(),
+              houseNumber: house.trim(),
+              notes: notes.trim(),
+            }
+          : undefined,
     });
     toast.success(
       method === "cash"
@@ -122,46 +147,146 @@ function Checkout() {
 
   return (
     <AppShell>
-      <header className="px-5 pt-6">
-        <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-ember">Checkout</p>
-        <h1 className="font-heading text-3xl font-extrabold">Almost hot</h1>
+      <header className="flex items-center gap-3 px-5 pt-6">
+        <button
+          onClick={goBack}
+          aria-label="Back"
+          className="flex size-9 items-center justify-center rounded-full border border-border bg-surface"
+        >
+          <ArrowLeft className="size-4" />
+        </button>
+        <div>
+          <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-ember">Checkout</p>
+          <h1 className="font-heading text-3xl font-extrabold">Almost hot</h1>
+        </div>
       </header>
 
+      {/* Pickup vs Delivery selector */}
       <section className="mt-6 px-5">
         <h2 className="mb-3 text-xs font-bold uppercase tracking-widest text-muted-foreground">
-          Where to deliver
+          How would you like it?
         </h2>
-        <PinMap value={pin} onChange={setPin} />
-        <div className="mt-4 grid grid-cols-2 gap-3">
-          <input
-            value={building}
-            onChange={(e) => setBuilding(e.target.value)}
-            placeholder="Building / landmark"
-            className="rounded-xl border border-border bg-surface px-4 py-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ember"
-          />
-          <input
-            value={house}
-            onChange={(e) => setHouse(e.target.value)}
-            placeholder="House / apt #"
-            className="rounded-xl border border-border bg-surface px-4 py-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ember"
-          />
+        <div className="grid grid-cols-2 gap-3">
+          {(
+            [
+              {
+                id: "delivery" as OrderType,
+                label: "Delivery",
+                sub: "Rider to your door",
+                Icon: Bike,
+              },
+              {
+                id: "pickup" as OrderType,
+                label: "Pickup",
+                sub: "Grab it at the kiosk",
+                Icon: Store,
+              },
+            ]
+          ).map(({ id, label, sub, Icon }) => {
+            const active = orderType === id;
+            return (
+              <button
+                key={id}
+                type="button"
+                onClick={() => setOrderType(id)}
+                className={`relative overflow-hidden rounded-2xl border p-4 text-left transition-all ${
+                  active
+                    ? "border-ember bg-ember/10 shadow-glow"
+                    : "border-border bg-surface"
+                }`}
+              >
+                <div
+                  className={`flex size-10 items-center justify-center rounded-xl ${
+                    active ? "sizzle text-primary-foreground" : "bg-surface-2 text-muted-foreground"
+                  }`}
+                >
+                  <Icon className="size-5" />
+                </div>
+                <p className="mt-3 font-heading text-lg font-bold">{label}</p>
+                <p className="text-xs text-muted-foreground">{sub}</p>
+                {active && (
+                  <span className="absolute right-3 top-3 flex size-6 items-center justify-center rounded-full bg-ember text-primary-foreground">
+                    <Check className="size-3.5" />
+                  </span>
+                )}
+              </button>
+            );
+          })}
         </div>
-        <textarea
-          value={notes}
-          onChange={(e) => setNotes(e.target.value)}
-          placeholder="Delivery notes (gate code, floor, colour...)"
-          className="mt-3 w-full rounded-xl border border-border bg-surface px-4 py-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ember"
-          rows={2}
-        />
-        {!user && (
-          <input
-            value={guestName}
-            onChange={(e) => setGuestName(e.target.value)}
-            placeholder="Your name (guest)"
-            className="mt-3 w-full rounded-xl border border-border bg-surface px-4 py-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ember"
-          />
-        )}
       </section>
+
+      {/* Guest contact (both types) */}
+      {!user && (
+        <section className="mt-6 px-5">
+          <h2 className="mb-3 text-xs font-bold uppercase tracking-widest text-muted-foreground">
+            Your details
+          </h2>
+          <div className="grid grid-cols-2 gap-3">
+            <input
+              value={guestName}
+              onChange={(e) => setGuestName(e.target.value)}
+              placeholder="Your name"
+              className="rounded-xl border border-border bg-surface px-4 py-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ember"
+            />
+            <input
+              value={guestPhone}
+              onChange={(e) => setGuestPhone(e.target.value)}
+              placeholder="Phone number"
+              inputMode="tel"
+              className="rounded-xl border border-border bg-surface px-4 py-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ember"
+            />
+          </div>
+        </section>
+      )}
+
+      {/* Delivery location — hidden on pickup */}
+      {orderType === "delivery" && (
+        <section className="mt-6 px-5 animate-rise">
+          <h2 className="mb-3 text-xs font-bold uppercase tracking-widest text-muted-foreground">
+            Where to deliver
+          </h2>
+          <PinMap value={pin} onChange={setPin} />
+          <div className="mt-4 grid grid-cols-2 gap-3">
+            <input
+              value={building}
+              onChange={(e) => setBuilding(e.target.value)}
+              placeholder="Building / landmark"
+              className="rounded-xl border border-border bg-surface px-4 py-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ember"
+            />
+            <input
+              value={house}
+              onChange={(e) => setHouse(e.target.value)}
+              placeholder="House / apt #"
+              className="rounded-xl border border-border bg-surface px-4 py-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ember"
+            />
+          </div>
+          <textarea
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            placeholder="Delivery notes (gate code, floor, colour...)"
+            className="mt-3 w-full rounded-xl border border-border bg-surface px-4 py-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ember"
+            rows={2}
+          />
+        </section>
+      )}
+
+      {orderType === "pickup" && (
+        <section className="mt-6 px-5 animate-rise">
+          <div className="rounded-2xl border border-ember/30 bg-ember/5 p-4">
+            <div className="flex items-center gap-3">
+              <div className="flex size-10 items-center justify-center rounded-xl sizzle text-primary-foreground">
+                <Store className="size-5" />
+              </div>
+              <div>
+                <p className="font-heading text-base font-bold">JFlavors Kiosk</p>
+                <p className="text-xs text-muted-foreground">
+                  We'll text you the moment it's crackling ready.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       <section className="mt-8 px-5">
         <h2 className="mb-3 text-xs font-bold uppercase tracking-widest text-muted-foreground">
@@ -255,7 +380,7 @@ function Checkout() {
           onClick={() => setShowConfirm(true)}
           className="w-full rounded-full sizzle py-4 font-heading font-bold text-primary-foreground shadow-glow"
         >
-          Place order — KES {total}
+          Place {orderType === "pickup" ? "pickup" : "delivery"} order — KES {total}
         </button>
       </div>
 
@@ -265,7 +390,9 @@ function Checkout() {
             <AlertDialogTitle>Confirm your order?</AlertDialogTitle>
             <AlertDialogDescription>
               {method === "cash"
-                ? "You'll pay in cash on delivery. We start prepping right away."
+                ? orderType === "pickup"
+                  ? "You'll pay in cash at the kiosk. We start prepping right away."
+                  : "You'll pay in cash on delivery. We start prepping right away."
                 : "We'll verify your payment screenshot before starting. You'll see updates in Orders."}
             </AlertDialogDescription>
           </AlertDialogHeader>
