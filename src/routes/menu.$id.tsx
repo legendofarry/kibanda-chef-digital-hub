@@ -1,8 +1,8 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AppShell } from "@/components/AppShell";
 import { useAppState, actions } from "@/lib/store";
-import { ArrowLeft, Heart, Minus, Plus, ShoppingBag, Flame, Sparkles } from "lucide-react";
+import { ArrowLeft, Heart, Minus, Plus, ShoppingBag } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/menu/$id")({
@@ -22,14 +22,28 @@ function ItemDetail() {
   const { id } = Route.useParams();
   const menu = useAppState((s) => s.menu);
   const favorites = useAppState((s) => s.favorites);
+  const cartItem = useAppState((s) => s.cart.find((c) => c.itemId === id));
   const navigate = useNavigate();
   const item = menu.find((m) => m.id === id);
-  const [qty, setQty] = useState(1);
-  const [spiceLevel, setSpiceLevel] = useState<(typeof spiceOptions)[number]>("medium");
-  const [addOns, setAddOns] = useState<string[]>(["Fresh lime"]);
-  const [notes, setNotes] = useState("");
+  const isEditing = !!cartItem;
 
-  const total = useMemo(() => item ? item.price * qty : 0, [item, qty]);
+  const [qty, setQty] = useState(cartItem?.quantity ?? 1);
+  const [spiceLevel, setSpiceLevel] = useState<(typeof spiceOptions)[number]>(
+    cartItem?.customization?.spiceLevel ?? "medium",
+  );
+  const [addOns, setAddOns] = useState<string[]>(
+    cartItem?.customization?.addOns ?? ["Fresh lime"],
+  );
+  const [notes, setNotes] = useState(cartItem?.customization?.notes ?? "");
+
+  // If cart line changes externally (e.g. cleared elsewhere), keep local UI sane.
+  useEffect(() => {
+    if (cartItem) {
+      setQty(cartItem.quantity);
+    }
+  }, [cartItem?.quantity]);
+
+  const total = useMemo(() => (item ? item.price * qty : 0), [item, qty]);
 
   if (!item) {
     return (
@@ -47,21 +61,35 @@ function ItemDetail() {
     );
   }
 
-  function add() {
-    if (!item) return;
-    if (item.soldOut) return;
-    actions.addToCart(item.id, qty, {
+  function save() {
+    if (item!.soldOut) return;
+    actions.upsertCartItem(item!.id, qty, {
       spiceLevel,
       addOns,
       notes: notes.trim() || undefined,
     });
-    toast.success(`${qty}× ${item.name} added to cart`);
+    toast.success(isEditing ? `${item!.name} updated` : `${qty}× ${item!.name} added`);
     navigate({ to: "/cart" });
+  }
+
+  function removeFromCart() {
+    actions.removeFromCart(item!.id);
+    toast.success(`${item!.name} removed`);
+    navigate({ to: "/menu" });
   }
 
   return (
     <AppShell>
-      <div className={`relative aspect-[4/4.2] bg-gradient-to-br ${item.bg} px-4 pt-4`}>
+      <div className="relative aspect-[4/4.2] overflow-hidden">
+        <img
+          src={item.image}
+          alt={item.name}
+          width={768}
+          height={768}
+          className={`absolute inset-0 h-full w-full object-cover ${item.soldOut ? "grayscale" : ""}`}
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-black/40" />
+
         <button
           onClick={() => {
             if (window.history.length > 1) window.history.back();
@@ -76,23 +104,19 @@ function ItemDetail() {
             actions.toggleFavorite(item.id);
             toast.success(isFav ? "Removed from favorites" : "Added to favorites");
           }}
-          className="absolute right-4 top-4 flex size-10 items-center justify-center rounded-full glass"
+          className="absolute right-4 top-4 z-10 flex size-10 items-center justify-center rounded-full glass"
         >
           <Heart className={`size-5 ${isFav ? "fill-ember text-ember" : ""}`} />
         </button>
 
-        <div className="absolute inset-x-0 top-16 flex items-center justify-center">
-          <div className="rounded-full bg-black/35 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.3em] text-white backdrop-blur-sm">
-            {item.featured ? "Featured plate" : "Chef special"}
+        <div className="absolute inset-x-0 top-16 z-10 flex items-center justify-center">
+          <div className="rounded-full bg-black/45 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.3em] text-white backdrop-blur-sm">
+            {isEditing ? "Editing in cart" : item.featured ? "Featured plate" : "Chef special"}
           </div>
         </div>
 
-        <div className="absolute inset-0 grid place-items-center text-[8.5rem] drop-shadow-[0_16px_44px_rgba(0,0,0,0.45)]">
-          <span className={item.soldOut ? "grayscale" : ""}>{item.emoji}</span>
-        </div>
-
         {item.soldOut && (
-          <div className="absolute inset-0 grid place-items-center bg-background/70 backdrop-blur">
+          <div className="absolute inset-0 z-10 grid place-items-center bg-background/70 backdrop-blur">
             <span className="rounded-full border border-border bg-background px-4 py-2 text-sm font-bold uppercase tracking-widest">
               Sold Out
             </span>
@@ -100,7 +124,7 @@ function ItemDetail() {
         )}
       </div>
 
-      <div className="relative z-10 -mt-6 space-y-5 rounded-[30px] bg-background p-5">
+      <div className="relative z-10 -mt-8 space-y-5 rounded-[30px] bg-background p-5">
         <div>
           <div className="flex items-start justify-between gap-2">
             <h1 className="font-heading text-2xl font-extrabold text-balance">{item.name}</h1>
@@ -126,7 +150,7 @@ function ItemDetail() {
                     key={level}
                     type="button"
                     onClick={() => setSpiceLevel(level)}
-                    className={`rounded-full border px-3 py-2 text-xs font-bold transition-all ${
+                    className={`rounded-full border px-3 py-2 text-xs font-bold capitalize transition-all ${
                       spiceLevel === level
                         ? "border-ember bg-ember/10 text-ember"
                         : "border-border bg-background text-muted-foreground"
@@ -203,6 +227,7 @@ function ItemDetail() {
               onClick={() => setQty(Math.max(1, qty - 1))}
               className="flex size-9 items-center justify-center rounded-full"
               disabled={item.soldOut}
+              aria-label="Decrease"
             >
               <Minus className="size-4" />
             </button>
@@ -211,19 +236,29 @@ function ItemDetail() {
               onClick={() => setQty(qty + 1)}
               className="flex size-9 items-center justify-center rounded-full"
               disabled={item.soldOut}
+              aria-label="Increase"
             >
               <Plus className="size-4" />
             </button>
           </div>
           <button
-            onClick={add}
+            onClick={save}
             disabled={item.soldOut}
             className="flex flex-1 items-center justify-center gap-2 rounded-full sizzle py-3.5 font-heading font-bold text-primary-foreground shadow-glow disabled:opacity-40 disabled:shadow-none"
           >
             <ShoppingBag className="size-4" />
-            {item.soldOut ? "Sold out" : `Add — KES ${total}`}
+            {item.soldOut ? "Sold out" : isEditing ? `Update — KES ${total}` : `Add — KES ${total}`}
           </button>
         </div>
+
+        {isEditing && (
+          <button
+            onClick={removeFromCart}
+            className="w-full rounded-full border border-destructive/30 py-2.5 text-xs font-semibold text-destructive"
+          >
+            Remove from cart
+          </button>
+        )}
       </div>
     </AppShell>
   );

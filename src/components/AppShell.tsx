@@ -66,7 +66,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       <Link
         to="/ai"
         aria-label="AI Assistant"
-        className="fixed right-4 top-4 z-40 flex size-11 items-center justify-center rounded-full sizzle text-primary-foreground shadow-glow"
+        className="fixed bottom-24 right-4 z-40 flex size-12 items-center justify-center rounded-full sizzle text-primary-foreground shadow-glow"
       >
         <Sparkles className="size-5" />
       </Link>

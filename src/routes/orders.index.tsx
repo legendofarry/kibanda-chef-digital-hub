@@ -3,7 +3,7 @@ import { AppShell } from "@/components/AppShell";
 import { useAppState } from "@/lib/store";
 import { Receipt, ArrowRight } from "lucide-react";
 
-export const Route = createFileRoute("/orders")({
+export const Route = createFileRoute("/orders/")({
   head: () => ({
     meta: [
       { title: "Your orders — JFlavors" },

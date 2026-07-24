@@ -100,14 +100,6 @@ function Profile() {
         <Row icon={Receipt} label="Orders" to="/orders" />
         <Row icon={Star} label="Reviews" to="/reviews" />
         <Row icon={Heart} label="Favorites" to="/menu" />
-        <Row
-          icon={Bell}
-          label={`Notifications${unread ? ` (${unread})` : ""}`}
-          onClick={() => {
-            actions.markNotificationsRead();
-            toast.success("All caught up");
-          }}
-        />
         <Row icon={Bike} label="Become a delivery rider" to="/delivery" />
         {owner && (
           <Row icon={Store} label="Owner dashboard" to="/owner" accent />

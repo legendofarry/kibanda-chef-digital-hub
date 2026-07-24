@@ -1,33 +1,89 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useRef } from "react";
 import { AppShell } from "@/components/AppShell";
-import { CHEF } from "@/lib/data";
-import { Award, Mail, Phone, Sparkles, Utensils } from "lucide-react";
+import { CHEF, CHEF_PORTRAIT } from "@/lib/data";
+import { actions, useAppState } from "@/lib/store";
+import { Camera, Mail, Phone, Sparkles, Utensils, X } from "lucide-react";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/chef")({
   head: () => ({
     meta: [
       { title: "Chef John — JFlavors" },
-      { name: "description", content: "The chef behind JFlavors: bio, journey, philosophy and services." },
+      { name: "description", content: "The chef behind JFlavors: bio, philosophy and services." },
       { property: "og:title", content: "Chef John — JFlavors" },
-      { property: "og:description", content: "Restaurant-trained street food from Chef John Karimi." },
+      { property: "og:description", content: "Restaurant-trained street food from Chef John." },
     ],
   }),
   component: ChefPage,
 });
 
 function ChefPage() {
+  const chefAvatar = useAppState((s) => s.chefAvatar);
+  const fileRef = useRef<HTMLInputElement>(null);
+  const avatar = chefAvatar ?? CHEF_PORTRAIT;
+
+  function onPick(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image too large (max 5MB)");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      actions.setChefAvatar(String(reader.result));
+      toast.success("Photo updated");
+    };
+    reader.readAsDataURL(file);
+  }
+
   return (
     <AppShell>
       <div className="relative">
-        <div className="h-56 bg-gradient-to-br from-ember/30 via-surface to-saffron/20" />
+        <div className="h-64 bg-gradient-to-br from-ember/30 via-surface to-saffron/20" />
         <div className="absolute inset-0 grid place-items-center">
-          <div className="flex size-32 items-center justify-center rounded-full sizzle text-6xl shadow-glow">
-            👨‍🍳
+          <div className="relative">
+            <div className="size-36 overflow-hidden rounded-full border-4 border-background shadow-glow">
+              <img
+                src={avatar}
+                alt={CHEF.name}
+                width={768}
+                height={768}
+                className="h-full w-full object-cover"
+              />
+            </div>
+            <button
+              onClick={() => fileRef.current?.click()}
+              aria-label="Upload chef photo"
+              className="absolute bottom-1 right-1 flex size-10 items-center justify-center rounded-full sizzle text-primary-foreground shadow-glow active:scale-95"
+            >
+              <Camera className="size-4" />
+            </button>
+            {chefAvatar && (
+              <button
+                onClick={() => {
+                  actions.setChefAvatar(null);
+                  toast.success("Reset to default");
+                }}
+                aria-label="Reset photo"
+                className="absolute -top-1 -right-1 flex size-7 items-center justify-center rounded-full border border-border bg-background text-muted-foreground"
+              >
+                <X className="size-3" />
+              </button>
+            )}
+            <input
+              ref={fileRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={onPick}
+            />
           </div>
         </div>
       </div>
 
-      <div className="px-5 py-6 space-y-8">
+      <div className="space-y-8 px-5 py-6">
         <div className="text-center">
           <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-ember">The chef</p>
           <h1 className="mt-1 font-heading text-3xl font-extrabold">{CHEF.name}</h1>
@@ -39,38 +95,11 @@ function ChefPage() {
           <p className="mt-2 text-sm leading-relaxed">{CHEF.bio}</p>
         </section>
 
-        <section>
-          <h2 className="mb-3 font-heading text-lg font-bold">Journey</h2>
-          <ol className="space-y-3">
-            {CHEF.journey.map((j) => (
-              <li key={j.year} className="flex gap-4">
-                <span className="w-12 shrink-0 font-heading font-bold text-ember">{j.year}</span>
-                <span className="text-sm">{j.event}</span>
-              </li>
-            ))}
-          </ol>
-        </section>
-
         <section className="rounded-3xl sizzle p-5 text-primary-foreground shadow-glow">
           <Sparkles className="size-5" />
           <p className="mt-3 font-heading text-lg font-bold text-balance">
             "{CHEF.philosophy}"
           </p>
-        </section>
-
-        <section>
-          <h2 className="mb-3 font-heading text-lg font-bold">Certifications</h2>
-          <ul className="space-y-2">
-            {CHEF.certifications.map((c) => (
-              <li
-                key={c}
-                className="flex items-center gap-3 rounded-2xl border border-border bg-surface p-3 text-sm"
-              >
-                <Award className="size-4 text-saffron" />
-                {c}
-              </li>
-            ))}
-          </ul>
         </section>
 
         <section>

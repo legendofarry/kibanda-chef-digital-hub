@@ -27,9 +27,16 @@ function Merch() {
 
       <div className="mt-6 grid grid-cols-2 gap-3 px-5 pb-6">
         {MERCH_TEASERS.map((m) => (
-          <div key={m.id} className="rounded-3xl border border-border bg-surface p-4">
-            <div className="grid aspect-square place-items-center rounded-2xl bg-gradient-to-br from-surface-2 to-background text-6xl">
-              {m.emoji}
+          <div key={m.id} className="rounded-3xl border border-border bg-surface p-3">
+            <div className="overflow-hidden rounded-2xl">
+              <img
+                src={m.image}
+                alt={m.name}
+                loading="lazy"
+                width={768}
+                height={768}
+                className="aspect-square w-full object-cover"
+              />
             </div>
             <p className="mt-3 text-sm font-bold">{m.name}</p>
             <p className="text-xs text-muted-foreground">KES {m.price}</p>

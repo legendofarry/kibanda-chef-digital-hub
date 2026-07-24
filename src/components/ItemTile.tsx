@@ -1,24 +1,32 @@
 import { Link } from "@tanstack/react-router";
-import { Plus, Check } from "lucide-react";
-import { useState } from "react";
-import { actions } from "@/lib/store";
+import { Plus, Minus } from "lucide-react";
+import { actions, useAppState } from "@/lib/store";
 import { toast } from "sonner";
 import type { MenuItem } from "@/lib/data";
 
 export function ItemTile({ item }: { item: MenuItem }) {
-  const [added, setAdded] = useState(false);
+  const cartItem = useAppState((s) => s.cart.find((c) => c.itemId === item.id));
+  const inCart = !!cartItem;
 
   function quickAdd(e: React.MouseEvent) {
     e.preventDefault();
     e.stopPropagation();
     if (item.soldOut) return;
-    actions.addToCart(item.id, 1, {
-      spiceLevel: "medium",
-      addOns: [],
-    });
-    setAdded(true);
+    actions.addToCart(item.id, 1, { spiceLevel: "medium", addOns: [] });
     toast.success(`${item.name} added`);
-    window.setTimeout(() => setAdded(false), 1200);
+  }
+
+  function inc(e: React.MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!cartItem) return;
+    actions.setCartQty(item.id, cartItem.quantity + 1);
+  }
+  function dec(e: React.MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!cartItem) return;
+    actions.setCartQty(item.id, cartItem.quantity - 1);
   }
 
   return (
@@ -29,20 +37,21 @@ export function ItemTile({ item }: { item: MenuItem }) {
         item.soldOut ? "opacity-70 pointer-events-none" : ""
       }`}
     >
-      <div className={`relative aspect-square bg-gradient-to-br ${item.bg} overflow-hidden`}>
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.14),transparent_50%)]" />
-        <div className="absolute inset-0 grid place-items-center">
-          <span
-            className={`block text-6xl transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-6 ${
-              item.soldOut ? "grayscale" : ""
-            }`}
-          >
-            {item.emoji}
-          </span>
-        </div>
+      <div className="relative aspect-square overflow-hidden">
+        <img
+          src={item.image}
+          alt={item.name}
+          loading="lazy"
+          width={768}
+          height={768}
+          className={`h-full w-full object-cover transition-transform duration-300 group-hover:scale-105 ${
+            item.soldOut ? "grayscale" : ""
+          }`}
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
 
         {(item.new || item.popular) && !item.soldOut && (
-          <div className="absolute left-2 top-2 rounded-full bg-black/45 px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest text-white backdrop-blur-sm">
+          <div className="absolute left-2 top-2 rounded-full bg-black/55 px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest text-white backdrop-blur-sm">
             {item.new ? "New" : "Hot"}
           </div>
         )}
@@ -61,17 +70,43 @@ export function ItemTile({ item }: { item: MenuItem }) {
           <p className="line-clamp-1 text-sm font-semibold text-foreground">{item.name}</p>
           <p className="mt-0.5 font-heading text-base font-extrabold text-saffron">KES {item.price}</p>
         </div>
-        <button
-          type="button"
-          onClick={quickAdd}
-          disabled={item.soldOut}
-          aria-label={`Add ${item.name} to cart`}
-          className={`flex size-9 shrink-0 items-center justify-center rounded-full shadow-glow transition-all active:scale-90 ${
-            added ? "bg-success text-primary-foreground" : "sizzle text-primary-foreground"
-          } disabled:opacity-40 disabled:shadow-none`}
-        >
-          {added ? <Check className="size-4" strokeWidth={3} /> : <Plus className="size-4" strokeWidth={3} />}
-        </button>
+
+        {inCart ? (
+          <div
+            onClick={(e) => e.preventDefault()}
+            className="flex items-center gap-1 rounded-full border border-ember/40 bg-ember/10 p-0.5 shadow-glow"
+          >
+            <button
+              type="button"
+              onClick={dec}
+              aria-label={`Decrease ${item.name}`}
+              className="grid size-7 place-items-center rounded-full text-ember active:scale-90"
+            >
+              <Minus className="size-3.5" strokeWidth={3} />
+            </button>
+            <span className="min-w-4 text-center text-xs font-bold text-ember">
+              {cartItem!.quantity}
+            </span>
+            <button
+              type="button"
+              onClick={inc}
+              aria-label={`Increase ${item.name}`}
+              className="grid size-7 place-items-center rounded-full text-ember active:scale-90"
+            >
+              <Plus className="size-3.5" strokeWidth={3} />
+            </button>
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={quickAdd}
+            disabled={item.soldOut}
+            aria-label={`Add ${item.name} to cart`}
+            className="flex size-9 shrink-0 items-center justify-center rounded-full sizzle text-primary-foreground shadow-glow transition-all active:scale-90 disabled:opacity-40 disabled:shadow-none"
+          >
+            <Plus className="size-4" strokeWidth={3} />
+          </button>
+        )}
       </div>
     </Link>
   );

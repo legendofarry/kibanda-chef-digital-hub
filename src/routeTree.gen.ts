@@ -12,7 +12,6 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as ReviewsRouteImport } from './routes/reviews'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as OwnerRouteImport } from './routes/owner'
-import { Route as OrdersRouteImport } from './routes/orders'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as MerchRouteImport } from './routes/merch'
 import { Route as LoyaltyRouteImport } from './routes/loyalty'
@@ -24,6 +23,7 @@ import { Route as CartRouteImport } from './routes/cart'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AiRouteImport } from './routes/ai'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as OrdersIndexRouteImport } from './routes/orders.index'
 import { Route as MenuIndexRouteImport } from './routes/menu.index'
 import { Route as OrdersIdRouteImport } from './routes/orders.$id'
 import { Route as MenuIdRouteImport } from './routes/menu.$id'
@@ -41,11 +41,6 @@ const ProfileRoute = ProfileRouteImport.update({
 const OwnerRoute = OwnerRouteImport.update({
   id: '/owner',
   path: '/owner',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const OrdersRoute = OrdersRouteImport.update({
-  id: '/orders',
-  path: '/orders',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OnboardingRoute = OnboardingRouteImport.update({
@@ -103,15 +98,20 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const OrdersIndexRoute = OrdersIndexRouteImport.update({
+  id: '/orders/',
+  path: '/orders/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MenuIndexRoute = MenuIndexRouteImport.update({
   id: '/menu/',
   path: '/menu/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OrdersIdRoute = OrdersIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => OrdersRoute,
+  id: '/orders/$id',
+  path: '/orders/$id',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const MenuIdRoute = MenuIdRouteImport.update({
   id: '/menu/$id',
@@ -131,13 +131,13 @@ export interface FileRoutesByFullPath {
   '/loyalty': typeof LoyaltyRoute
   '/merch': typeof MerchRoute
   '/onboarding': typeof OnboardingRoute
-  '/orders': typeof OrdersRouteWithChildren
   '/owner': typeof OwnerRoute
   '/profile': typeof ProfileRoute
   '/reviews': typeof ReviewsRoute
   '/menu/$id': typeof MenuIdRoute
   '/orders/$id': typeof OrdersIdRoute
   '/menu/': typeof MenuIndexRoute
+  '/orders/': typeof OrdersIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -151,13 +151,13 @@ export interface FileRoutesByTo {
   '/loyalty': typeof LoyaltyRoute
   '/merch': typeof MerchRoute
   '/onboarding': typeof OnboardingRoute
-  '/orders': typeof OrdersRouteWithChildren
   '/owner': typeof OwnerRoute
   '/profile': typeof ProfileRoute
   '/reviews': typeof ReviewsRoute
   '/menu/$id': typeof MenuIdRoute
   '/orders/$id': typeof OrdersIdRoute
   '/menu': typeof MenuIndexRoute
+  '/orders': typeof OrdersIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -172,13 +172,13 @@ export interface FileRoutesById {
   '/loyalty': typeof LoyaltyRoute
   '/merch': typeof MerchRoute
   '/onboarding': typeof OnboardingRoute
-  '/orders': typeof OrdersRouteWithChildren
   '/owner': typeof OwnerRoute
   '/profile': typeof ProfileRoute
   '/reviews': typeof ReviewsRoute
   '/menu/$id': typeof MenuIdRoute
   '/orders/$id': typeof OrdersIdRoute
   '/menu/': typeof MenuIndexRoute
+  '/orders/': typeof OrdersIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -194,13 +194,13 @@ export interface FileRouteTypes {
     | '/loyalty'
     | '/merch'
     | '/onboarding'
-    | '/orders'
     | '/owner'
     | '/profile'
     | '/reviews'
     | '/menu/$id'
     | '/orders/$id'
     | '/menu/'
+    | '/orders/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -214,13 +214,13 @@ export interface FileRouteTypes {
     | '/loyalty'
     | '/merch'
     | '/onboarding'
-    | '/orders'
     | '/owner'
     | '/profile'
     | '/reviews'
     | '/menu/$id'
     | '/orders/$id'
     | '/menu'
+    | '/orders'
   id:
     | '__root__'
     | '/'
@@ -234,13 +234,13 @@ export interface FileRouteTypes {
     | '/loyalty'
     | '/merch'
     | '/onboarding'
-    | '/orders'
     | '/owner'
     | '/profile'
     | '/reviews'
     | '/menu/$id'
     | '/orders/$id'
     | '/menu/'
+    | '/orders/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -255,12 +255,13 @@ export interface RootRouteChildren {
   LoyaltyRoute: typeof LoyaltyRoute
   MerchRoute: typeof MerchRoute
   OnboardingRoute: typeof OnboardingRoute
-  OrdersRoute: typeof OrdersRouteWithChildren
   OwnerRoute: typeof OwnerRoute
   ProfileRoute: typeof ProfileRoute
   ReviewsRoute: typeof ReviewsRoute
   MenuIdRoute: typeof MenuIdRoute
+  OrdersIdRoute: typeof OrdersIdRoute
   MenuIndexRoute: typeof MenuIndexRoute
+  OrdersIndexRoute: typeof OrdersIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -284,13 +285,6 @@ declare module '@tanstack/react-router' {
       path: '/owner'
       fullPath: '/owner'
       preLoaderRoute: typeof OwnerRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/orders': {
-      id: '/orders'
-      path: '/orders'
-      fullPath: '/orders'
-      preLoaderRoute: typeof OrdersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/onboarding': {
@@ -370,6 +364,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/orders/': {
+      id: '/orders/'
+      path: '/orders'
+      fullPath: '/orders/'
+      preLoaderRoute: typeof OrdersIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/menu/': {
       id: '/menu/'
       path: '/menu'
@@ -379,10 +380,10 @@ declare module '@tanstack/react-router' {
     }
     '/orders/$id': {
       id: '/orders/$id'
-      path: '/$id'
+      path: '/orders/$id'
       fullPath: '/orders/$id'
       preLoaderRoute: typeof OrdersIdRouteImport
-      parentRoute: typeof OrdersRoute
+      parentRoute: typeof rootRouteImport
     }
     '/menu/$id': {
       id: '/menu/$id'
@@ -393,17 +394,6 @@ declare module '@tanstack/react-router' {
     }
   }
 }
-
-interface OrdersRouteChildren {
-  OrdersIdRoute: typeof OrdersIdRoute
-}
-
-const OrdersRouteChildren: OrdersRouteChildren = {
-  OrdersIdRoute: OrdersIdRoute,
-}
-
-const OrdersRouteWithChildren =
-  OrdersRoute._addFileChildren(OrdersRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
@@ -417,12 +407,13 @@ const rootRouteChildren: RootRouteChildren = {
   LoyaltyRoute: LoyaltyRoute,
   MerchRoute: MerchRoute,
   OnboardingRoute: OnboardingRoute,
-  OrdersRoute: OrdersRouteWithChildren,
   OwnerRoute: OwnerRoute,
   ProfileRoute: ProfileRoute,
   ReviewsRoute: ReviewsRoute,
   MenuIdRoute: MenuIdRoute,
+  OrdersIdRoute: OrdersIdRoute,
   MenuIndexRoute: MenuIndexRoute,
+  OrdersIndexRoute: OrdersIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
