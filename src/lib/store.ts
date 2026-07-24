@@ -40,17 +40,21 @@ export type OrderStatus =
   | "cancelled"
   | "rejected";
 
+export type OrderType = "delivery" | "pickup";
+
 export interface Order {
   id: string;
   userId: string | null; // null = guest
   guestName?: string;
+  guestPhone?: string;
+  orderType: OrderType;
   items: { itemId: string; name: string; price: number; quantity: number }[];
   total: number;
   paymentMethod: "cash" | "mpesa" | "airtel";
   paymentScreenshot?: string; // data-url
   status: OrderStatus;
   createdAt: number;
-  location: {
+  location?: {
     lat: number;
     lng: number;
     building: string;
