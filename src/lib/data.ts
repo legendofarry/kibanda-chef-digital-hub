@@ -1,5 +1,18 @@
 // Static seed data + types + business config.
 // Owner detection: change OWNER_EMAIL to grant dashboard access.
+import bhajiaClassic from "@/assets/menu/bhajia-classic.jpg";
+import bhajiaChili from "@/assets/menu/bhajia-chili.jpg";
+import smokeyClassic from "@/assets/menu/smokey-classic.jpg";
+import smokeyDeluxe from "@/assets/menu/smokey-deluxe.jpg";
+import samosaBeef from "@/assets/menu/samosa-beef.jpg";
+import samosaVeg from "@/assets/menu/samosa-veg.jpg";
+import kachumbariImg from "@/assets/menu/kachumbari.jpg";
+import chaiImg from "@/assets/menu/chai.jpg";
+import merchSauce from "@/assets/merch/sauce.jpg";
+import merchApron from "@/assets/merch/apron.jpg";
+import merchTee from "@/assets/merch/tee.jpg";
+import chefPortrait from "@/assets/chef-john.jpg";
+
 export const OWNER_EMAIL = "karimiarrison@gmail.com";
 export const BUSINESS_PAYMENT_NUMBER = "0712 345 678";
 
@@ -12,8 +25,9 @@ export interface MenuItem {
   price: number;
   description: string;
   ingredients: string[];
+  image: string;
   emoji: string;
-  bg: string; // gradient class
+  bg: string; // gradient class fallback
   soldOut?: boolean;
   featured?: boolean;
   popular?: boolean;
@@ -28,6 +42,7 @@ export const SEED_MENU: MenuItem[] = [
     price: 80,
     description: "Hand-cut potato, double-fried in seasoned oil, tossed with masala salt.",
     ingredients: ["Potato", "Gram flour", "Cumin", "Turmeric", "Fresh coriander"],
+    image: bhajiaClassic,
     emoji: "🥔",
     bg: "from-amber-500/40 to-orange-700/40",
     featured: true,
@@ -40,6 +55,7 @@ export const SEED_MENU: MenuItem[] = [
     price: 120,
     description: "House-fire dip on the side. Not for the faint-hearted.",
     ingredients: ["Potato", "Bird's eye chili", "Tamarind", "Garlic"],
+    image: bhajiaChili,
     emoji: "🌶️",
     bg: "from-red-500/40 to-orange-800/40",
     popular: true,
@@ -51,6 +67,7 @@ export const SEED_MENU: MenuItem[] = [
     price: 60,
     description: "Char-grilled beef sausage with fresh kachumbari.",
     ingredients: ["Beef sausage", "Onion", "Tomato", "Coriander", "Lime"],
+    image: smokeyClassic,
     emoji: "🌭",
     bg: "from-rose-500/40 to-amber-700/40",
     featured: true,
@@ -62,6 +79,7 @@ export const SEED_MENU: MenuItem[] = [
     price: 90,
     description: "Wood-fired smokey wrapped in fresh chapati with kachumbari.",
     ingredients: ["Beef sausage", "Chapati", "Kachumbari", "House sauce"],
+    image: smokeyDeluxe,
     emoji: "🔥",
     bg: "from-orange-600/40 to-red-800/40",
     new: true,
@@ -74,6 +92,7 @@ export const SEED_MENU: MenuItem[] = [
     price: 50,
     description: "Crisp pastry, spiced minced beef, folded fresh.",
     ingredients: ["Beef", "Onion", "Garam masala", "Coriander"],
+    image: samosaBeef,
     emoji: "🥟",
     bg: "from-yellow-500/40 to-amber-700/40",
     popular: true,
@@ -85,6 +104,7 @@ export const SEED_MENU: MenuItem[] = [
     price: 40,
     description: "Peas, potato and warm spices in a golden shell.",
     ingredients: ["Potato", "Peas", "Cumin", "Ginger"],
+    image: samosaVeg,
     emoji: "🥟",
     bg: "from-lime-500/40 to-emerald-700/40",
     soldOut: true,
@@ -96,6 +116,7 @@ export const SEED_MENU: MenuItem[] = [
     price: 30,
     description: "Cold, bright, and spicy. The perfect sidekick.",
     ingredients: ["Tomato", "Red onion", "Lime", "Chili", "Coriander"],
+    image: kachumbariImg,
     emoji: "🥗",
     bg: "from-emerald-500/40 to-teal-700/40",
   },
@@ -106,6 +127,7 @@ export const SEED_MENU: MenuItem[] = [
     price: 40,
     description: "Slow-brewed on a jiko. Cardamom, ginger, black tea.",
     ingredients: ["Black tea", "Milk", "Cardamom", "Ginger", "Cinnamon"],
+    image: chaiImg,
     emoji: "☕",
     bg: "from-amber-700/40 to-stone-800/40",
     new: true,
@@ -113,9 +135,9 @@ export const SEED_MENU: MenuItem[] = [
 ];
 
 export interface BusinessHours {
-  open: string; // "HH:MM"
+  open: string;
   close: string;
-  days: number[]; // 0=Sun..6=Sat
+  days: number[];
 }
 
 export const DEFAULT_HOURS: BusinessHours = {
@@ -124,17 +146,12 @@ export const DEFAULT_HOURS: BusinessHours = {
   days: [1, 2, 3, 4, 5, 6, 0],
 };
 
+export const CHEF_PORTRAIT = chefPortrait;
+
 export const CHEF = {
   name: "John",
   tagline: "Street food, elevated.",
   bio: "Trained across Nairobi's finest kitchens, I bring restaurant technique to the kibanda counter. Every bhajia is hand-cut. Every smokey is fired to order.",
-  journey: [
-    { year: "2015", event: "Apprenticeship at Tamarind Nairobi" },
-    { year: "2018", event: "Sous chef, Hemingways Nairobi" },
-    { year: "2021", event: "Head chef, private events, Karen" },
-    { year: "2024", event: "Opened Kibanda JFlavors" },
-  ],
-  certifications: ["City & Guilds Culinary Arts", "HACCP Food Safety Level 3"],
   philosophy:
     "Great food doesn't need a linen tablecloth. It needs heat, honesty, and hands that care.",
   services: ["Private chef", "Corporate lunches", "Weddings", "Cocktail catering"],
@@ -157,9 +174,9 @@ export const PROMOS = [
 ];
 
 export const MERCH_TEASERS = [
-  { id: "m1", name: "JFlavors House Sauce", price: 350, emoji: "🍾" },
-  { id: "m2", name: "Kibanda Apron", price: 1200, emoji: "🧑‍🍳" },
-  { id: "m3", name: "Signature Tee", price: 1500, emoji: "👕" },
+  { id: "m1", name: "JFlavors House Sauce", price: 350, image: merchSauce },
+  { id: "m2", name: "Kibanda Apron", price: 1200, image: merchApron },
+  { id: "m3", name: "Signature Tee", price: 1500, image: merchTee },
 ];
 
 export const AVATARS = ["👨‍🍳", "🧑‍🍳", "🔥", "🌶️", "🥟", "☕", "🍲", "🌭"];
