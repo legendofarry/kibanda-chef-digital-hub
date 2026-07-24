@@ -1,3 +1,4 @@
+/// <reference types="google.maps" />
 // Google Maps location picker with a custom animated JFlavors pin.
 // Falls back to a stylised SVG plate if the browser key isn't wired.
 import { useEffect, useRef, useState } from "react";
