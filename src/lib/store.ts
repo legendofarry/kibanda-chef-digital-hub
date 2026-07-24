@@ -11,7 +11,7 @@ export interface User {
   username: string;
   fullName: string;
   email: string;
-  avatar: string; // emoji or data-url
+  avatar: string;
   createdAt: number;
   biometricEnabled: boolean;
   biometricAsked: boolean;
@@ -44,14 +44,14 @@ export type OrderType = "delivery" | "pickup";
 
 export interface Order {
   id: string;
-  userId: string | null; // null = guest
+  userId: string | null;
   guestName?: string;
   guestPhone?: string;
   orderType: OrderType;
   items: { itemId: string; name: string; price: number; quantity: number }[];
   total: number;
   paymentMethod: "cash" | "mpesa" | "airtel";
-  paymentScreenshot?: string; // data-url
+  paymentScreenshot?: string;
   status: OrderStatus;
   createdAt: number;
   location?: {
@@ -122,6 +122,7 @@ export interface AppState {
   hasOnboarded: boolean;
   loyaltyPoints: number;
   favorites: string[];
+  chefAvatar: string | null;
 }
 
 const initialState: AppState = {
@@ -179,9 +180,9 @@ const initialState: AppState = {
   hasOnboarded: false,
   loyaltyPoints: 0,
   favorites: [],
+  chefAvatar: null,
 };
 
-// ---- Reactive store ----
 type Listener = () => void;
 const listeners = new Set<Listener>();
 let state: AppState = initialState;
@@ -192,8 +193,8 @@ function load() {
     const raw = localStorage.getItem(KEY);
     if (raw) {
       const parsed = JSON.parse(raw);
-      // merge to keep any newly added default fields
-      state = { ...initialState, ...parsed, menu: parsed.menu ?? SEED_MENU };
+      // Always use fresh SEED_MENU so image imports resolve to current bundle URLs.
+      state = { ...initialState, ...parsed, menu: SEED_MENU };
     }
   } catch {}
 }
@@ -234,24 +235,22 @@ export function useAppState<T>(selector: (s: AppState) => T): T {
   );
 }
 
-export function update(mut: (s: AppState) => AppState | void) {
+// Immutable setter — always produces a new top-level state so
+// useSyncExternalStore sees changed snapshots.
+function set(patch: Partial<AppState> | ((s: AppState) => Partial<AppState>)) {
   ensureHydrated();
-  const next = mut(state);
-  if (next) state = next;
-  else state = { ...state };
+  const next = typeof patch === "function" ? patch(state) : patch;
+  state = { ...state, ...next };
   emit();
 }
 
-// ---- Repository actions ----
 export const actions = {
   setOnboarded() {
-    update((s) => {
-      s.hasOnboarded = true;
-    });
+    set({ hasOnboarded: true });
   },
   signIn(input: { username: string; fullName: string; email: string; avatar: string }) {
-    update((s) => {
-      s.user = {
+    set({
+      user: {
         id: crypto.randomUUID(),
         username: input.username,
         fullName: input.fullName,
@@ -260,60 +259,71 @@ export const actions = {
         createdAt: Date.now(),
         biometricEnabled: false,
         biometricAsked: false,
-      };
+      },
     });
   },
   signOut() {
-    update((s) => {
-      s.user = null;
-      s.cart = [];
-    });
+    set({ user: null, cart: [] });
   },
   updateUser(patch: Partial<User>) {
-    update((s) => {
-      if (s.user) s.user = { ...s.user, ...patch };
-    });
+    set((s) => (s.user ? { user: { ...s.user, ...patch } } : {}));
   },
   addToCart(itemId: string, quantity = 1, customization?: CartCustomization) {
-    update((s) => {
+    set((s) => {
       const existing = s.cart.find((c) => c.itemId === itemId);
       if (existing) {
-        existing.quantity += quantity;
-        if (customization) existing.customization = customization;
-      } else s.cart.push({ itemId, quantity, customization });
+        return {
+          cart: s.cart.map((c) =>
+            c.itemId === itemId
+              ? { ...c, quantity: c.quantity + quantity, customization: customization ?? c.customization }
+              : c,
+          ),
+        };
+      }
+      return { cart: [...s.cart, { itemId, quantity, customization }] };
+    });
+  },
+  // Upsert — used from item detail Edit/Add screen so re-submitting an item
+  // that is already in the cart replaces its quantity + customization
+  // instead of stacking another line.
+  upsertCartItem(itemId: string, quantity: number, customization?: CartCustomization) {
+    set((s) => {
+      const exists = s.cart.some((c) => c.itemId === itemId);
+      if (exists) {
+        return {
+          cart: s.cart.map((c) =>
+            c.itemId === itemId ? { ...c, quantity, customization } : c,
+          ),
+        };
+      }
+      return { cart: [...s.cart, { itemId, quantity, customization }] };
     });
   },
   updateCartItem(itemId: string, patch: Partial<CartItem>) {
-    update((s) => {
-      const item = s.cart.find((x) => x.itemId === itemId);
-      if (!item) return;
-      s.cart = s.cart.map((x) => (x.itemId === itemId ? { ...x, ...patch } : x));
-    });
+    set((s) => ({
+      cart: s.cart.map((c) => (c.itemId === itemId ? { ...c, ...patch } : c)),
+    }));
   },
   removeFromCart(itemId: string) {
-    update((s) => {
-      s.cart = s.cart.filter((c) => c.itemId !== itemId);
-    });
+    set((s) => ({ cart: s.cart.filter((c) => c.itemId !== itemId) }));
   },
   setCartQty(itemId: string, quantity: number) {
-    update((s) => {
-      const c = s.cart.find((x) => x.itemId === itemId);
-      if (!c) return;
-      if (quantity <= 0) s.cart = s.cart.filter((x) => x.itemId !== itemId);
-      else c.quantity = quantity;
+    set((s) => {
+      if (quantity <= 0) return { cart: s.cart.filter((c) => c.itemId !== itemId) };
+      return {
+        cart: s.cart.map((c) => (c.itemId === itemId ? { ...c, quantity } : c)),
+      };
     });
   },
   clearCart() {
-    update((s) => {
-      s.cart = [];
-    });
+    set({ cart: [] });
   },
   toggleFavorite(itemId: string) {
-    update((s) => {
-      s.favorites = s.favorites.includes(itemId)
+    set((s) => ({
+      favorites: s.favorites.includes(itemId)
         ? s.favorites.filter((f) => f !== itemId)
-        : [...s.favorites, itemId];
-    });
+        : [...s.favorites, itemId],
+    }));
   },
   placeOrder(o: Omit<Order, "id" | "createdAt" | "timeline" | "status"> & { status?: OrderStatus }): Order {
     const status: OrderStatus = o.status ?? (o.paymentMethod === "cash" ? "confirmed" : "pending_payment");
@@ -324,80 +334,78 @@ export const actions = {
       status,
       timeline: [{ status, at: Date.now(), note: "Order placed" }],
     };
-    update((s) => {
-      s.orders.unshift(order);
-      s.cart = [];
-      s.loyaltyPoints += Math.floor(o.total / 10);
-      s.notifications.unshift({
-        id: crypto.randomUUID(),
-        title: "Order placed 🎉",
-        body: `Your order ${order.id} has been received.`,
-        createdAt: Date.now(),
-        read: false,
-        kind: "order",
-      });
-    });
+    set((s) => ({
+      orders: [order, ...s.orders],
+      cart: [],
+      loyaltyPoints: s.loyaltyPoints + Math.floor(o.total / 10),
+      notifications: [
+        {
+          id: crypto.randomUUID(),
+          title: "Order placed 🎉",
+          body: `Your order ${order.id} has been received.`,
+          createdAt: Date.now(),
+          read: false,
+          kind: "order",
+        },
+        ...s.notifications,
+      ],
+    }));
     return order;
   },
   setOrderStatus(id: string, status: OrderStatus, note?: string) {
-    update((s) => {
-      const o = s.orders.find((x) => x.id === id);
-      if (!o) return;
-      o.status = status;
-      o.timeline.push({ status, at: Date.now(), note });
-    });
+    set((s) => ({
+      orders: s.orders.map((o) =>
+        o.id === id
+          ? { ...o, status, timeline: [...o.timeline, { status, at: Date.now(), note }] }
+          : o,
+      ),
+    }));
   },
   toggleSoldOut(id: string) {
-    update((s) => {
-      const m = s.menu.find((x) => x.id === id);
-      if (m) m.soldOut = !m.soldOut;
-    });
+    set((s) => ({
+      menu: s.menu.map((m) => (m.id === id ? { ...m, soldOut: !m.soldOut } : m)),
+    }));
   },
   updateMenuItem(id: string, patch: Partial<MenuItem>) {
-    update((s) => {
-      s.menu = s.menu.map((m) => (m.id === id ? { ...m, ...patch } : m));
-    });
+    set((s) => ({ menu: s.menu.map((m) => (m.id === id ? { ...m, ...patch } : m)) }));
   },
   addReview(r: Omit<Review, "id" | "createdAt">) {
-    update((s) => {
-      s.reviews.unshift({ ...r, id: crypto.randomUUID(), createdAt: Date.now() });
-    });
+    set((s) => ({
+      reviews: [{ ...r, id: crypto.randomUUID(), createdAt: Date.now() }, ...s.reviews],
+    }));
   },
   deleteReview(id: string) {
-    update((s) => {
-      s.reviews = s.reviews.filter((r) => r.id !== id);
-    });
+    set((s) => ({ reviews: s.reviews.filter((r) => r.id !== id) }));
   },
   addCatering(c: Omit<CateringRequest, "id" | "createdAt" | "status">) {
-    update((s) => {
-      s.catering.unshift({
-        ...c,
-        id: crypto.randomUUID(),
-        createdAt: Date.now(),
-        status: "new",
-      });
-    });
+    set((s) => ({
+      catering: [
+        { ...c, id: crypto.randomUUID(), createdAt: Date.now(), status: "new" as const },
+        ...s.catering,
+      ],
+    }));
   },
   setCateringStatus(id: string, status: CateringRequest["status"]) {
-    update((s) => {
-      const c = s.catering.find((x) => x.id === id);
-      if (c) c.status = status;
-    });
+    set((s) => ({
+      catering: s.catering.map((c) => (c.id === id ? { ...c, status } : c)),
+    }));
   },
   addDeliverySignup(d: Omit<DeliverySignup, "id" | "createdAt">) {
-    update((s) => {
-      s.deliverySignups.unshift({ ...d, id: crypto.randomUUID(), createdAt: Date.now() });
-    });
+    set((s) => ({
+      deliverySignups: [
+        { ...d, id: crypto.randomUUID(), createdAt: Date.now() },
+        ...s.deliverySignups,
+      ],
+    }));
   },
   setHours(h: BusinessHours) {
-    update((s) => {
-      s.hours = h;
-    });
+    set({ hours: h });
   },
   markNotificationsRead() {
-    update((s) => {
-      s.notifications = s.notifications.map((n) => ({ ...n, read: true }));
-    });
+    set((s) => ({ notifications: s.notifications.map((n) => ({ ...n, read: true })) }));
+  },
+  setChefAvatar(dataUrl: string | null) {
+    set({ chefAvatar: dataUrl });
   },
   clearAllData() {
     if (typeof window !== "undefined") localStorage.removeItem(KEY);
