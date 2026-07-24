@@ -66,11 +66,14 @@ function CartPage() {
                 className="rounded-2xl border border-border bg-surface p-3"
               >
                 <div className="flex items-center gap-3">
-                  <div
-                    className={`grid size-16 shrink-0 place-items-center rounded-xl bg-gradient-to-br text-3xl ${l.item.bg}`}
-                  >
-                    {l.item.emoji}
-                  </div>
+                  <img
+                    src={l.item.image}
+                    alt={l.item.name}
+                    loading="lazy"
+                    width={128}
+                    height={128}
+                    className="size-16 shrink-0 rounded-xl object-cover"
+                  />
                   <div className="min-w-0 flex-1">
                     <p className="line-clamp-1 text-sm font-bold">{l.item.name}</p>
                     <p className="text-xs text-muted-foreground">

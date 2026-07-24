@@ -2,11 +2,12 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { AppShell } from "@/components/AppShell";
 import { ItemTile } from "@/components/ItemTile";
-import { useAppState, actions } from "@/lib/store";
+import { NotificationDrawer } from "@/components/NotificationDrawer";
+import { useAppState } from "@/lib/store";
 import { PROMOS, CHEF, MERCH_TEASERS } from "@/lib/data";
 import { sizzleSuggestion } from "@/lib/ai.functions";
 import { useServerFn } from "@tanstack/react-start";
-import { Flame, Sparkles, ArrowRight, ChefHat, Trophy, PartyPopper, ShoppingBag } from "lucide-react";
+import { Flame, Sparkles, ArrowRight, ChefHat, Trophy, PartyPopper, ShoppingBag, Bell } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/")({
@@ -26,11 +27,14 @@ function Home() {
   const menu = useAppState((s) => s.menu);
   const points = useAppState((s) => s.loyaltyPoints);
   const hasOnboarded = useAppState((s) => s.hasOnboarded);
+  const notifications = useAppState((s) => s.notifications);
+  const unread = notifications.filter((n) => !n.read).length;
   const navigate = useNavigate();
   const suggest = useServerFn(sizzleSuggestion);
   const [shaking, setShaking] = useState(false);
   const [sparks, setSparks] = useState<{ id: number; x: number; y: number }[]>([]);
   const [suggestion, setSuggestion] = useState<{ name: string; reason: string; id: string } | null>(null);
+  const [notifOpen, setNotifOpen] = useState(false);
 
   useEffect(() => {
     if (!hasOnboarded) navigate({ to: "/onboarding" });
@@ -53,7 +57,6 @@ function Home() {
     try {
       const res = await suggest({ data: { mood: undefined } });
       const item = menu.find((m) => m.id === res.itemId);
-      // Let the animation breathe before revealing the pick
       setTimeout(() => {
         if (item) setSuggestion({ id: item.id, name: item.name, reason: res.reason });
         setShaking(false);
@@ -66,7 +69,8 @@ function Home() {
 
   return (
     <AppShell>
-      {/* Header */}
+      <NotificationDrawer open={notifOpen} onClose={() => setNotifOpen(false)} />
+
       <header className="flex items-center justify-between px-5 pt-5">
         <div className="flex items-center gap-3">
           <div className="relative">
@@ -82,10 +86,22 @@ function Home() {
             </p>
           </div>
         </div>
+
+        <button
+          onClick={() => setNotifOpen(true)}
+          aria-label="Notifications"
+          className="relative flex size-11 items-center justify-center rounded-2xl border border-border bg-surface active:scale-95"
+        >
+          <Bell className="size-5" />
+          {unread > 0 && (
+            <span className="absolute -right-1 -top-1 flex min-w-[18px] items-center justify-center rounded-full sizzle px-1 text-[10px] font-bold text-primary-foreground shadow-glow">
+              {unread}
+            </span>
+          )}
+        </button>
       </header>
 
       <div className="mt-6 space-y-8 pb-6">
-        {/* Signature AI: Toss the Pan */}
         <section className="px-5 animate-rise">
           <button
             type="button"
@@ -126,7 +142,6 @@ function Home() {
               </div>
             </div>
 
-            {/* Fullcard flip animation overlay */}
             {shaking && (
               <div className="pointer-events-none absolute inset-0 z-20 overflow-hidden rounded-2xl">
                 <div className="absolute inset-0 bg-black/50 backdrop-blur-[2px]" />
@@ -161,7 +176,6 @@ function Home() {
           </button>
         </section>
 
-        {/* Loyalty snapshot */}
         <section className="px-5">
           <Link
             to="/loyalty"
@@ -180,7 +194,6 @@ function Home() {
           </Link>
         </section>
 
-        {/* Today's specials */}
         <section>
           <div className="mb-3 flex items-end justify-between px-5">
             <div>
@@ -197,13 +210,19 @@ function Home() {
                 to="/menu/$id"
                 params={{ id: item.id }}
                 key={item.id}
-                className={`group relative w-64 shrink-0 overflow-hidden rounded-2xl border border-border`}
+                className="group relative w-64 shrink-0 overflow-hidden rounded-2xl border border-border"
               >
-                <div className={`aspect-[4/3] bg-gradient-to-br ${item.bg} relative`}>
-                  <div className="absolute inset-0 grid place-items-center text-7xl">
-                    {item.emoji}
-                  </div>
-                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-background to-transparent p-4">
+                <div className="relative aspect-[4/3]">
+                  <img
+                    src={item.image}
+                    alt={item.name}
+                    loading="lazy"
+                    width={768}
+                    height={576}
+                    className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-background via-background/30 to-transparent" />
+                  <div className="absolute bottom-0 left-0 right-0 p-4">
                     <p className="font-heading text-lg font-bold">{item.name}</p>
                     <p className="text-xs text-muted-foreground">KES {item.price}</p>
                   </div>
@@ -213,7 +232,6 @@ function Home() {
           </div>
         </section>
 
-        {/* Promotions */}
         <section className="px-5">
           <h3 className="mb-3 font-heading text-xl font-bold">Running promos</h3>
           <div className="space-y-3">
@@ -238,7 +256,6 @@ function Home() {
           </div>
         </section>
 
-        {/* Popular grid */}
         <section className="px-5">
           <div className="mb-3 flex items-end justify-between">
             <h3 className="font-heading text-xl font-bold">Popular right now</h3>
@@ -253,7 +270,6 @@ function Home() {
           </div>
         </section>
 
-        {/* Chef highlight */}
         <section className="px-5">
           <Link
             to="/chef"
@@ -275,7 +291,6 @@ function Home() {
           </Link>
         </section>
 
-        {/* Catering CTA */}
         <section className="px-5">
           <Link
             to="/catering"
@@ -293,7 +308,6 @@ function Home() {
           </Link>
         </section>
 
-        {/* Merch teaser */}
         <section className="px-5">
           <div className="mb-3 flex items-end justify-between">
             <h3 className="font-heading text-xl font-bold">Merch drop soon</h3>
@@ -305,10 +319,17 @@ function Home() {
             {MERCH_TEASERS.map((m) => (
               <div
                 key={m.id}
-                className="w-40 shrink-0 rounded-2xl border border-border bg-surface p-4"
+                className="w-40 shrink-0 rounded-2xl border border-border bg-surface p-3"
               >
-                <div className="grid aspect-square place-items-center rounded-xl bg-gradient-to-br from-surface-2 to-background text-5xl">
-                  {m.emoji}
+                <div className="overflow-hidden rounded-xl">
+                  <img
+                    src={m.image}
+                    alt={m.name}
+                    loading="lazy"
+                    width={768}
+                    height={768}
+                    className="aspect-square w-full object-cover"
+                  />
                 </div>
                 <p className="mt-3 text-sm font-bold">{m.name}</p>
                 <p className="text-xs text-muted-foreground">KES {m.price}</p>
